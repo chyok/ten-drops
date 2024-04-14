@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "ten-drops"
+version = "0.1.0"
+description = "A ten drops game written in pygame."
+authors = ["chyok <chyok@hotmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pygame = "^2.5.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
