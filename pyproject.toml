@@ -5,6 +5,7 @@ description = "A ten drops game written in pygame."
 authors = ["chyok <chyok@hotmail.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [{include = "ten_drops"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
