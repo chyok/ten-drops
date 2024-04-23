@@ -12,11 +12,11 @@ class Direction:
 
 
 class Droplet:
-    def __init__(self, row, col, direction, speed):
+    def __init__(self, row, col, direction):
         self.row = row
         self.col = col
         self.direction = direction
-        self.speed = speed
+        self.speed = 0.1
         self.color = BLUE
         self.radius = 5
 
@@ -25,13 +25,22 @@ class Droplet:
         y = self.row * 40 + 20
         pygame.draw.circle(WINDOW, self.color, (x, y), self.radius)
 
-    def move(self, grid):
+    def move(self, grid, droplets: list):
         self.row += self.direction[0] * self.speed
         self.col += self.direction[1] * self.speed
         if self.row < 0 or self.row >= 10 or self.col < 0 or self.col >= 10:
             return None
-        if ele := grid[int(self.row)][int(self.col)] is not None:
+        row, col = int(self.row), int(self.col)
+        if (ele := grid[row][col]) is not None:
             if ele.update():
-                grid[int(self.row)][int(self.col)] = None
+                grid[row][col] = None
+                droplets.extend(Droplet.diffusion(row, col))
             return None
         return self
+
+    @classmethod
+    def diffusion(cls, row, col) -> list["Droplet"]:
+        droplets = []
+        for direction in [Direction.Down, Direction.Up, Direction.Left, Direction.Right]:
+            droplets.append(Droplet(row, col, direction))
+        return droplets
