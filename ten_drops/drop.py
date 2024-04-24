@@ -1,5 +1,5 @@
 import pygame
-from ten_drops import WINDOW
+from ten_drops import Screen
 
 COLORS = [(0, 0, 255), (0, 255, 0), (255, 0, 0), (255, 255, 0)]
 
@@ -15,7 +15,7 @@ class Drop:
     def draw(self):
         x = self.col * 40 + 20
         y = self.row * 40 + 20
-        pygame.draw.circle(WINDOW, self.color, (x, y), self.radius)
+        pygame.draw.circle(Screen, self.color, (x, y), self.radius)
 
     def update(self):
         self.state = self.state + 1

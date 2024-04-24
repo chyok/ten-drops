@@ -1,7 +1,7 @@
 import pygame
 import random
 
-from ten_drops import WINDOW
+from ten_drops import Screen
 from ten_drops.drop import Drop
 from ten_drops.droplet import Droplet
 
@@ -36,7 +36,7 @@ class Game:
                             self.all_droplets.extend(Droplet.diffusion(row, col))
                             self.grid[row][col] = None
 
-            WINDOW.fill((255, 255, 255))
+            Screen.fill((255, 255, 255))
 
             for row in range(10):
                 for col in range(10):

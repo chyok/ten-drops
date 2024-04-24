@@ -1,5 +1,5 @@
 import pygame
-from ten_drops import WINDOW
+from ten_drops import Screen
 
 BLUE = (0, 0, 255)
 
@@ -23,7 +23,7 @@ class Droplet:
     def draw(self):
         x = self.col * 40 + 20
         y = self.row * 40 + 20
-        pygame.draw.circle(WINDOW, self.color, (x, y), self.radius)
+        pygame.draw.circle(Screen, self.color, (x, y), self.radius)
 
     def move(self, grid, droplets: list):
         self.row += self.direction[0] * self.speed
