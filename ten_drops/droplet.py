@@ -16,13 +16,13 @@ class Droplet:
         self.row = row
         self.col = col
         self.direction = direction
-        self.speed = 0.1
+        self.speed = 0.02
         self.color = BLUE
         self.radius = 5
 
     def draw(self):
-        x = self.col * 40 + 20
-        y = self.row * 40 + 20
+        x = self.col * (Screen.get_height() // 10) + (Screen.get_height() // 10 // 2)
+        y = self.row * (Screen.get_width() // 10) + (Screen.get_width() // 10 // 2)
         pygame.draw.circle(Screen, self.color, (x, y), self.radius)
 
     def move(self, grid, droplets: list):

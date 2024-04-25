@@ -29,8 +29,8 @@ class Game:
                     self.run = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
-                    col = mouse_x // 40
-                    row = mouse_y // 40
+                    col = mouse_x // (Screen.get_width() // 10)
+                    row = mouse_y // (Screen.get_height() // 10)
                     if self.grid[row][col] is not None:
                         if self.grid[row][col].update():
                             self.all_droplets.extend(Droplet.diffusion(row, col))
