@@ -1,7 +1,7 @@
 import pygame
 import random
 
-from ten_drops import Screen
+from ten_drops import SCREEN, PLAYGROUND, BACKGROUND
 from ten_drops.drop import Drop
 from ten_drops.droplet import Droplet
 
@@ -29,14 +29,17 @@ class Game:
                     self.run = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
-                    col = mouse_x // (Screen.get_width() // 10)
-                    row = mouse_y // (Screen.get_height() // 10)
+                    col = mouse_x // (PLAYGROUND.get_width() // 10)
+                    row = mouse_y // (PLAYGROUND.get_height() // 10)
                     if self.grid[row][col] is not None:
                         if self.grid[row][col].update():
                             self.all_droplets.extend(Droplet.diffusion(row, col))
                             self.grid[row][col] = None
 
-            Screen.fill((255, 255, 255))
+            SCREEN.blits([
+                (BACKGROUND, (0, 0)),
+                (PLAYGROUND, (0, 0))
+            ])
 
             for row in range(10):
                 for col in range(10):

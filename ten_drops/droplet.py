@@ -1,7 +1,8 @@
+import math
 import pygame
-from ten_drops import Screen
 
-BLUE = (0, 0, 255)
+from ten_drops import SCREEN
+from ten_drops import PLAYGROUND
 
 
 class Direction:
@@ -17,20 +18,24 @@ class Droplet:
         self.col = col
         self.direction = direction
         self.speed = 0.02
-        self.color = BLUE
+        self.color = (0, 0, 255)
         self.radius = 5
 
     def draw(self):
-        x = self.col * (Screen.get_height() // 10) + (Screen.get_height() // 10 // 2)
-        y = self.row * (Screen.get_width() // 10) + (Screen.get_width() // 10 // 2)
-        pygame.draw.circle(Screen, self.color, (x, y), self.radius)
+        x = self.col * (PLAYGROUND.get_height() // 10) + (PLAYGROUND.get_height() // 10 // 2)
+        y = self.row * (PLAYGROUND.get_width() // 10) + (PLAYGROUND.get_width() // 10 // 2)
+        pygame.draw.circle(SCREEN, self.color, (x, y), self.radius)
 
     def move(self, grid, droplets: list):
         self.row += self.direction[0] * self.speed
         self.col += self.direction[1] * self.speed
         if self.row < 0 or self.row >= 10 or self.col < 0 or self.col >= 10:
             return None
-        row, col = int(self.row), int(self.col)
+        if self.direction in (Direction.Up, Direction.Left):
+            row, col = math.ceil(self.row), math.ceil(self.col)
+        else:
+            row, col = math.floor(self.row), math.floor(self.col)
+
         if (ele := grid[row][col]) is not None:
             if ele.update():
                 grid[row][col] = None
