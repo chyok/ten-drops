@@ -10,7 +10,8 @@ __all__ = [
     "SCREEN",
     "BACKGROUND",
     "PLAYGROUND",
-    "DROP_IMAGES"
+    "DROP_IMAGES",
+    "DROPLET_IMAGES"
 ]
 
 pygame.init()
@@ -33,7 +34,7 @@ PLAYGROUND.set_alpha(100)
 class Status:
     action: list[Surface]
     change_action: list[Surface]
-    stable: Surface
+    stable: Surface | None = None
 
 
 def get_drop_images() -> list[Status]:
@@ -42,11 +43,11 @@ def get_drop_images() -> list[Status]:
 
     drop_images = [image.load(i).convert_alpha() for i in drop_image_paths]
 
-    max_height = max(i.get_height() for i in drop_images[:134])
-    max_width = max(i.get_width() for i in drop_images[:134])
+    max_length = max(max(i.get_size()) for i in drop_images[:134])
+    radio = PLAYGROUND.get_width() / 10 / max_length
 
-    drop_images = [smoothscale(i, (i.get_width() * (PLAYGROUND.get_width() / 10 / max_width),
-                                   i.get_height() * (PLAYGROUND.get_height() / 10 / max_height))) for i in drop_images]
+    drop_images = [smoothscale(i, (i.get_width() * radio,
+                                   i.get_height() * radio)) for i in drop_images]
 
     return [Status(action=drop_images[:31], change_action=drop_images[31:35], stable=drop_images[3]),
             Status(action=drop_images[35:71], change_action=drop_images[71:76], stable=drop_images[39]),
@@ -54,4 +55,21 @@ def get_drop_images() -> list[Status]:
             Status(action=drop_images[121:134], change_action=drop_images[134:], stable=drop_images[125])]
 
 
+def get_droplet_images() -> list[Status]:
+    droplet_image_path = join(IMAGE_PATH, "droplet")
+    droplet_image_paths = [join(droplet_image_path, f"{i}.png") for i in range(7)]
+
+    droplet_images = [image.load(i).convert_alpha() for i in droplet_image_paths]
+
+    max_length = max(max(i.get_size()) for i in droplet_images[:3])
+
+    radio = PLAYGROUND.get_width() / 10 / max_length / 3  # droplet is 3 times smaller than a drop
+
+    droplet_images = [smoothscale(i, (i.get_width() * radio,
+                                      i.get_height() * radio)) for i in droplet_images]
+
+    return [Status(action=droplet_images[:3], change_action=droplet_images[3:], stable=droplet_images[1])]
+
+
 DROP_IMAGES = get_drop_images()
+DROPLET_IMAGES = get_droplet_images()
