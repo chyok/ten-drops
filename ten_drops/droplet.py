@@ -22,19 +22,19 @@ class Droplet:
         self.radius = 5
 
     def draw(self):
-        stable_image = DROPLET_IMAGES[0].stable
+        static_image = DROPLET_IMAGES[0].static
         if self.direction == Direction.Up:
-            stable_image = rotate(stable_image, 90)
+            static_image = rotate(static_image, 90)
         elif self.direction == Direction.Left:
-            stable_image = rotate(stable_image, 90 * 2)
+            static_image = rotate(static_image, 90 * 2)
         elif self.direction == Direction.Down:
-            stable_image = rotate(stable_image, 90 * 3)
-        rect = stable_image.get_rect()
+            static_image = rotate(static_image, 90 * 3)
+        rect = static_image.get_rect()
 
         rect.x = self.col * (PLAYGROUND.get_height() // 10) + (PLAYGROUND.get_height() // 10 // 2) - rect.width // 2
         rect.y = self.row * (PLAYGROUND.get_width() // 10) + (PLAYGROUND.get_width() // 10 // 2) - rect.height // 2
 
-        SCREEN.blit(stable_image, rect)
+        SCREEN.blit(static_image, rect)
 
     def move(self, grid, droplets: list):
         self.row += self.direction[0] * self.speed

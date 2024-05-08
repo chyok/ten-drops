@@ -34,25 +34,25 @@ PLAYGROUND.set_alpha(100)
 class Status:
     action: list[Surface]
     change_action: list[Surface]
-    stable: Surface | None = None
+    static: Surface | None = None
 
 
 def get_drop_images() -> list[Status]:
     drop_image_path = join(IMAGE_PATH, "drop")
-    drop_image_paths = [join(drop_image_path, f"{i}.png") for i in range(139)]
+    drop_image_paths = [join(drop_image_path, f"{i}.png") for i in range(134)]
 
     drop_images = [image.load(i).convert_alpha() for i in drop_image_paths]
 
-    max_length = max(max(i.get_size()) for i in drop_images[:134])
+    max_length = max(max(i.get_size()) for i in drop_images[:130])
     radio = PLAYGROUND.get_width() / 10 / max_length
 
     drop_images = [smoothscale(i, (i.get_width() * radio,
                                    i.get_height() * radio)) for i in drop_images]
 
-    return [Status(action=drop_images[:31], change_action=drop_images[31:35], stable=drop_images[3]),
-            Status(action=drop_images[35:71], change_action=drop_images[71:76], stable=drop_images[39]),
-            Status(action=drop_images[76:110], change_action=drop_images[110:121], stable=drop_images[79]),
-            Status(action=drop_images[121:134], change_action=drop_images[134:], stable=drop_images[125])]
+    return [Status(action=drop_images[:20], change_action=drop_images[20:31], static=drop_images[19]),
+            Status(action=drop_images[48:66], change_action=drop_images[66:76], static=drop_images[60]),
+            Status(action=drop_images[76:90], change_action=drop_images[102:115], static=drop_images[85]),
+            Status(action=drop_images[115:130], change_action=drop_images[130:], static=drop_images[126])]
 
 
 def get_droplet_images() -> list[Status]:
@@ -68,7 +68,7 @@ def get_droplet_images() -> list[Status]:
     droplet_images = [smoothscale(i, (i.get_width() * radio,
                                       i.get_height() * radio)) for i in droplet_images]
 
-    return [Status(action=droplet_images[:3], change_action=droplet_images[3:], stable=droplet_images[1])]
+    return [Status(action=droplet_images[:3], change_action=droplet_images[3:], static=droplet_images[1])]
 
 
 DROP_IMAGES = get_drop_images()
