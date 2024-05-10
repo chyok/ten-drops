@@ -21,8 +21,7 @@ class Droplet(Sprite):
         self.row = row
         self.col = col
         self.direction = direction
-        self.speed = 0.05
-        self.radius = 5
+        self.speed = 0.1
 
     def draw(self):
         image = DROPLET_IMAGES[0].static
@@ -42,7 +41,7 @@ class Droplet(Sprite):
     def update(self, drops: Group, droplets: Group):
         self.row += self.direction[0] * self.speed
         self.col += self.direction[1] * self.speed
-        if self.row < 0 or self.row > 10 or self.col < 0 or self.col > 10:
+        if self.row < -0.5 or self.row > 9.5 or self.col < -0.5 or self.col > 9.5:
             droplets.remove(self)
             return
         if self.direction in (Direction.Up, Direction.Left):

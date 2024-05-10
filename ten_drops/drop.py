@@ -1,4 +1,5 @@
-from pygame.sprite import Sprite, Group, AbstractGroup
+from typing import Literal
+from pygame.sprite import Sprite, Group
 
 from ten_drops import PLAYGROUND, DROP_IMAGES
 from ten_drops.droplet import Droplet
@@ -11,11 +12,11 @@ class ActionType:
 
 
 class Drop(Sprite):
-    def __init__(self, row, col, *groups):
+    def __init__(self, row, col, state: Literal[0, 1, 2, 3] = 0, *groups):
         super().__init__(*groups)
         self.row = row
         self.col = col
-        self.state = 0
+        self.state = state
         self.radius = 10
         self.action_type = ActionType.static
         self.action_count = 0

@@ -1,32 +1,45 @@
 import pygame
 import random
 
+from collections import namedtuple
 from pygame.sprite import Group
 
 from ten_drops import SCREEN, PLAYGROUND, BACKGROUND
 from ten_drops.drop import Drop
 
+Level = namedtuple("Level", "state0, state1, state2, state3")
+Levels = [Level(2, 5, 8, 10),
+          Level(2, 5, 8, 8)]
+
 
 class Game:
     def __init__(self):
-        self.grid: list[list[None | Drop]] = [[None for _ in range(10)] for _ in range(10)]
         self.drops: Group = Group()
         self.run = True
         self.droplets: Group = Group()
         self.clock = pygame.time.Clock()
+        self.level = 1
+        self.hp = 10
 
     def _init_grid(self):
-        for row in range(10):
-            for col in range(10):
-                if random.random() < 0.3:
-                    self.drops.add(Drop(row, col))
+        used_positions = set()
+
+        for state, count in enumerate(Levels[self.level - 1]):
+            for _ in range(count):
+                while True:
+                    row = random.randint(0, 9)
+                    col = random.randint(0, 9)
+                    if (row, col) not in used_positions:
+                        used_positions.add((row, col))
+                        self.drops.add(Drop(row, col, state))
+                        break
 
     def start(self):
         self._init_grid()
         mouse_hover_pos = (-1, -1)
 
         while self.run:
-            self.clock.tick(20)
+            self.clock.tick(30)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.run = False
