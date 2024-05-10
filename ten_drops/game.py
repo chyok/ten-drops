@@ -5,7 +5,6 @@ from pygame.sprite import Group
 
 from ten_drops import SCREEN, PLAYGROUND, BACKGROUND
 from ten_drops.drop import Drop
-from ten_drops.droplet import Droplet
 
 
 class Game:
@@ -13,7 +12,7 @@ class Game:
         self.grid: list[list[None | Drop]] = [[None for _ in range(10)] for _ in range(10)]
         self.drops: Group = Group()
         self.run = True
-        self.all_droplets = []
+        self.droplets: Group = Group()
         self.clock = pygame.time.Clock()
 
     def _init_grid(self):
@@ -39,9 +38,7 @@ class Game:
 
                     for i in self.drops:
                         if i.row == row and i.col == col:
-                            if i.click():
-                                self.all_droplets.extend(Droplet.diffusion(row, col))
-                                self.drops.remove(i)
+                            i.click()
 
                 if event.type == pygame.MOUSEMOTION:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -57,28 +54,21 @@ class Game:
                 (PLAYGROUND, (0, 0))
             ])
 
-            self.drops.update()
+            self.drops.update(self.drops, self.droplets)
 
             self.drops.draw(SCREEN)
 
-            for droplet in self.all_droplets[:]:
-                new_droplet = droplet.move(self.grid, self.all_droplets)
-                if new_droplet is not None:
-                    new_droplet.draw()
-                else:
-                    self.all_droplets.remove(droplet)
+            self.droplets.update(self.drops, self.droplets)
 
             pygame.display.update()
 
-            all_exploded = True
-            for row in self.grid:
-                for drop in row:
-                    if drop is not None:
-                        all_exploded = False
-                        break
+            all_exploded = False
+
+            if len(self.drops) <= 0:
+                all_exploded = True
+
             if all_exploded:
-                pass
-                # print("win!")
-                # self.run = False
+                print("win!")
+                self.run = False
 
         pygame.quit()

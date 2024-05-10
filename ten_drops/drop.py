@@ -1,6 +1,7 @@
-from pygame.sprite import Sprite
+from pygame.sprite import Sprite, Group, AbstractGroup
 
 from ten_drops import PLAYGROUND, DROP_IMAGES
+from ten_drops.droplet import Droplet
 
 
 class ActionType:
@@ -29,18 +30,25 @@ class Drop(Sprite):
 
     def click(self):
         if self.action_type == ActionType.change:
-            return False
+            # ignore click when changing
+            return
 
         self.state = self.state + 1
-        if self.state >= len(DROP_IMAGES):
-            self.radius = 0
-            return True
 
         self.radius = (PLAYGROUND.get_width() // 10 // 2 // 2) + self.state * 5
         self.action_type = ActionType.change
-        return False
 
-    def update(self):
+    def hit(self):
+        self.state = self.state + 1
+
+        self.radius = (PLAYGROUND.get_width() // 10 // 2 // 2) + self.state * 5
+        self.action_type = ActionType.change
+
+    def update(self, drops: Group, droplets: Group):
+        if self.state == len(DROP_IMAGES):
+            drops.remove(self)
+            droplets.add(Droplet.diffusion(self.row, self.col))
+
         if self.action_type == ActionType.hover:
             all_count = len(DROP_IMAGES[self.state].action)
             if self.action_count < all_count:

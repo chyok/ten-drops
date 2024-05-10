@@ -49,10 +49,10 @@ def get_drop_images() -> list[Status]:
     drop_images = [smoothscale(i, (i.get_width() * radio,
                                    i.get_height() * radio)) for i in drop_images]
 
-    return [Status(action=drop_images[:20], change_action=drop_images[20:31], static=drop_images[19]),
-            Status(action=drop_images[48:66], change_action=drop_images[66:76], static=drop_images[60]),
-            Status(action=drop_images[76:90], change_action=drop_images[102:115], static=drop_images[85]),
-            Status(action=drop_images[115:130], change_action=drop_images[130:], static=drop_images[126])]
+    return [Status(action=drop_images[0:20], change_action=drop_images[25:31], static=drop_images[19]),
+            Status(action=drop_images[48:66], change_action=drop_images[69:76], static=drop_images[60]),
+            Status(action=drop_images[76:90], change_action=drop_images[108:115], static=drop_images[85]),
+            Status(action=drop_images[115:130], change_action=drop_images[130:134], static=drop_images[126])]
 
 
 def get_droplet_images() -> list[Status]:
