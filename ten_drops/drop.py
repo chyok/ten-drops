@@ -1,7 +1,7 @@
 from typing import Literal
 from pygame.sprite import Sprite, Group
 
-from ten_drops import PLAYGROUND, DROP_IMAGES
+from ten_drops import PLAYGROUND, DROP_IMAGES, GRID_SIZE
 from ten_drops.droplet import Droplet
 
 
@@ -25,8 +25,10 @@ class Drop(Sprite):
     def _update_image(self, image):
         self.image = image
         rect = self.image.get_rect()
-        rect.x = self.col * (PLAYGROUND.get_height() // 10) + (PLAYGROUND.get_height() // 10 // 2) - rect.width // 2
-        rect.y = self.row * (PLAYGROUND.get_width() // 10) + (PLAYGROUND.get_width() // 10 // 2) - rect.height // 2
+        rect.x = self.col * (PLAYGROUND.get_height() // GRID_SIZE) + (
+                PLAYGROUND.get_height() // GRID_SIZE // 2) - rect.width // 2
+        rect.y = self.row * (PLAYGROUND.get_width() // GRID_SIZE) + (
+                PLAYGROUND.get_width() // GRID_SIZE // 2) - rect.height // 2
         self.rect = rect
 
     def click(self):
@@ -36,19 +38,25 @@ class Drop(Sprite):
 
         self.state = self.state + 1
 
-        self.radius = (PLAYGROUND.get_width() // 10 // 2 // 2) + self.state * 5
+        self.radius = (PLAYGROUND.get_width() // GRID_SIZE // 2 // 2) + self.state * 5
         self.action_type = ActionType.change
 
-    def hit(self):
+    def hit(self) -> bool:
+        if self.state + 1 > len(DROP_IMAGES):
+            # if two droplets hit same drop and will break, return false to keep the droplet
+            return False
+
         self.state = self.state + 1
 
-        self.radius = (PLAYGROUND.get_width() // 10 // 2 // 2) + self.state * 5
+        self.radius = (PLAYGROUND.get_width() // GRID_SIZE // 2 // 2) + self.state * 5
         self.action_type = ActionType.change
+        return True
 
     def update(self, drops: Group, droplets: Group):
-        if self.state == len(DROP_IMAGES):
+        if self.state >= len(DROP_IMAGES):
             drops.remove(self)
             droplets.add(Droplet.diffusion(self.row, self.col))
+            return
 
         if self.action_type == ActionType.hover:
             all_count = len(DROP_IMAGES[self.state].action)

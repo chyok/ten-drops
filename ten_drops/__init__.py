@@ -8,6 +8,7 @@ from pygame.transform import smoothscale
 
 __all__ = [
     "SCREEN",
+    "GRID_SIZE",
     "BACKGROUND",
     "PLAYGROUND",
     "DROP_IMAGES",
@@ -18,6 +19,7 @@ pygame.init()
 pygame.display.set_caption("ten drops")
 
 SCREEN = pygame.display.set_mode((800, 600))
+GRID_SIZE = 6
 
 PATH = dirname(__file__)
 IMAGE_PATH = join(PATH, "asset", "img")
@@ -44,7 +46,7 @@ def get_drop_images() -> list[Status]:
     drop_images = [image.load(i).convert_alpha() for i in drop_image_paths]
 
     max_length = max(max(i.get_size()) for i in drop_images[:130])
-    radio = PLAYGROUND.get_width() / 10 / max_length
+    radio = PLAYGROUND.get_width() / GRID_SIZE / max_length
 
     drop_images = [smoothscale(i, (i.get_width() * radio,
                                    i.get_height() * radio)) for i in drop_images]
@@ -63,7 +65,7 @@ def get_droplet_images() -> list[Status]:
 
     max_length = max(max(i.get_size()) for i in droplet_images[:3])
 
-    radio = PLAYGROUND.get_width() / 10 / max_length / 3  # droplet is 3 times smaller than a drop
+    radio = PLAYGROUND.get_width() / GRID_SIZE / max_length / 3  # droplet is 3 times smaller than a drop
 
     droplet_images = [smoothscale(i, (i.get_width() * radio,
                                       i.get_height() * radio)) for i in droplet_images]

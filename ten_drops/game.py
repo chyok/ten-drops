@@ -4,11 +4,11 @@ import random
 from collections import namedtuple
 from pygame.sprite import Group
 
-from ten_drops import SCREEN, PLAYGROUND, BACKGROUND
+from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE
 from ten_drops.drop import Drop
 
 Level = namedtuple("Level", "state0, state1, state2, state3")
-Levels = [Level(2, 5, 8, 10),
+Levels = [Level(2, 5, 8, 9),
           Level(2, 5, 8, 8)]
 
 
@@ -27,16 +27,16 @@ class Game:
         for state, count in enumerate(Levels[self.level - 1]):
             for _ in range(count):
                 while True:
-                    row = random.randint(0, 9)
-                    col = random.randint(0, 9)
+                    row = random.randint(0, GRID_SIZE - 1)
+                    col = random.randint(0, GRID_SIZE - 1)
                     if (row, col) not in used_positions:
                         used_positions.add((row, col))
                         self.drops.add(Drop(row, col, state))
                         break
 
     def start(self):
-        self._init_grid()
         mouse_hover_pos = (-1, -1)
+        self._init_grid()
 
         while self.run:
             self.clock.tick(30)
@@ -46,8 +46,8 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
 
-                    row = mouse_y // (PLAYGROUND.get_height() // 10)
-                    col = mouse_x // (PLAYGROUND.get_width() // 10)
+                    row = mouse_y // (PLAYGROUND.get_height() // GRID_SIZE)
+                    col = mouse_x // (PLAYGROUND.get_width() // GRID_SIZE)
 
                     for i in self.drops:
                         if i.row == row and i.col == col:
@@ -55,8 +55,8 @@ class Game:
 
                 if event.type == pygame.MOUSEMOTION:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
-                    col = mouse_x // (PLAYGROUND.get_width() // 10)
-                    row = mouse_y // (PLAYGROUND.get_height() // 10)
+                    col = mouse_x // (PLAYGROUND.get_width() // GRID_SIZE)
+                    row = mouse_y // (PLAYGROUND.get_height() // GRID_SIZE)
                     for i in self.drops:
                         if i.row == row and i.col == col and (row, col) != mouse_hover_pos:
                             i.mouse_hover()
@@ -80,8 +80,9 @@ class Game:
             if len(self.drops) <= 0:
                 all_exploded = True
 
-            if all_exploded:
+            if all_exploded and len(self.droplets) == 0:
                 print("win!")
-                self.run = False
+                self.level += 1
+                self._init_grid()
 
         pygame.quit()

@@ -3,6 +3,7 @@ import math
 from pygame.sprite import Group, Sprite
 from pygame.transform import rotate
 
+from ten_drops import GRID_SIZE
 from ten_drops import DROPLET_IMAGES
 from ten_drops import PLAYGROUND
 from ten_drops import SCREEN
@@ -33,15 +34,21 @@ class Droplet(Sprite):
             image = rotate(image, 90 * 3)
         rect = image.get_rect()
 
-        rect.x = self.col * (PLAYGROUND.get_height() // 10) + (PLAYGROUND.get_height() // 10 // 2) - rect.width // 2
-        rect.y = self.row * (PLAYGROUND.get_width() // 10) + (PLAYGROUND.get_width() // 10 // 2) - rect.height // 2
+        rect.x = self.col * (PLAYGROUND.get_height() // GRID_SIZE) + (
+                PLAYGROUND.get_height() // GRID_SIZE // 2) - rect.width // 2
+        rect.y = self.row * (PLAYGROUND.get_width() // GRID_SIZE) + (
+                PLAYGROUND.get_width() // GRID_SIZE // 2) - rect.height // 2
 
         SCREEN.blit(image, rect)
 
     def update(self, drops: Group, droplets: Group):
         self.row += self.direction[0] * self.speed
         self.col += self.direction[1] * self.speed
-        if self.row < -0.5 or self.row > 9.5 or self.col < -0.5 or self.col > 9.5:
+        if any([self.row < -0.5,
+                self.col < -0.5,
+                self.row > GRID_SIZE - 0.5,
+                self.col > GRID_SIZE - 0.5]):
+            # The actual animation is offset by half a grid cell
             droplets.remove(self)
             return
         if self.direction in (Direction.Up, Direction.Left):
@@ -51,8 +58,8 @@ class Droplet(Sprite):
 
         for i in drops:
             if i.row == row and i.col == col:
-                i.hit()
-                droplets.remove(self)
+                if i.hit():
+                    droplets.remove(self)
                 return
 
         self.draw()
