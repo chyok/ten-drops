@@ -9,7 +9,7 @@ packages = [{include = "ten_drops"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pygame = "^2.5.2"
+pygame-ce = "^2.4.1"
 
 
 [build-system]

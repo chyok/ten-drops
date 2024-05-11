@@ -3,9 +3,8 @@ import math
 from pygame.sprite import Group, Sprite
 from pygame.transform import rotate
 
-from ten_drops import GRID_SIZE
 from ten_drops import DROPLET_IMAGES
-from ten_drops import PLAYGROUND
+from ten_drops import GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH
 from ten_drops import SCREEN
 
 
@@ -34,10 +33,10 @@ class Droplet(Sprite):
             image = rotate(image, 90 * 3)
         rect = image.get_rect()
 
-        rect.x = self.col * (PLAYGROUND.get_height() // GRID_SIZE) + (
-                PLAYGROUND.get_height() // GRID_SIZE // 2) - rect.width // 2
-        rect.y = self.row * (PLAYGROUND.get_width() // GRID_SIZE) + (
-                PLAYGROUND.get_width() // GRID_SIZE // 2) - rect.height // 2
+        rect.x = self.col * (PLAYGROUND_LENGTH // GRID_SIZE) + (
+                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.width // 2 + PLAYGROUND_OFFSET
+        rect.y = self.row * (PLAYGROUND_LENGTH // GRID_SIZE) + (
+                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.height // 2 + PLAYGROUND_OFFSET
 
         SCREEN.blit(image, rect)
 

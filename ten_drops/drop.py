@@ -1,7 +1,8 @@
 from typing import Literal
+
 from pygame.sprite import Sprite, Group
 
-from ten_drops import PLAYGROUND, DROP_IMAGES, GRID_SIZE
+from ten_drops import DROP_IMAGES, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH
 from ten_drops.droplet import Droplet
 
 
@@ -25,10 +26,10 @@ class Drop(Sprite):
     def _update_image(self, image):
         self.image = image
         rect = self.image.get_rect()
-        rect.x = self.col * (PLAYGROUND.get_height() // GRID_SIZE) + (
-                PLAYGROUND.get_height() // GRID_SIZE // 2) - rect.width // 2
-        rect.y = self.row * (PLAYGROUND.get_width() // GRID_SIZE) + (
-                PLAYGROUND.get_width() // GRID_SIZE // 2) - rect.height // 2
+        rect.x = self.col * (PLAYGROUND_LENGTH // GRID_SIZE) + (
+                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.width // 2 + PLAYGROUND_OFFSET
+        rect.y = self.row * (PLAYGROUND_LENGTH // GRID_SIZE) + (
+                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.height // 2 + PLAYGROUND_OFFSET
         self.rect = rect
 
     def click(self):
@@ -38,7 +39,7 @@ class Drop(Sprite):
 
         self.state = self.state + 1
 
-        self.radius = (PLAYGROUND.get_width() // GRID_SIZE // 2 // 2) + self.state * 5
+        self.radius = (PLAYGROUND_LENGTH // GRID_SIZE // 2 // 2) + self.state * 5
         self.action_type = ActionType.change
 
     def hit(self) -> bool:
@@ -48,7 +49,7 @@ class Drop(Sprite):
 
         self.state = self.state + 1
 
-        self.radius = (PLAYGROUND.get_width() // GRID_SIZE // 2 // 2) + self.state * 5
+        self.radius = (PLAYGROUND_LENGTH // GRID_SIZE // 2 // 2) + self.state * 5
         self.action_type = ActionType.change
         return True
 

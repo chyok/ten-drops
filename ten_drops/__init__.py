@@ -4,13 +4,15 @@ from os.path import join, dirname
 from dataclasses import dataclass
 
 from pygame import image, Surface
-from pygame.transform import smoothscale
+from pygame.transform import smoothscale, gaussian_blur
 
 __all__ = [
     "SCREEN",
     "GRID_SIZE",
     "BACKGROUND",
     "PLAYGROUND",
+    "PLAYGROUND_LENGTH",
+    "PLAYGROUND_OFFSET",
     "DROP_IMAGES",
     "DROPLET_IMAGES"
 ]
@@ -24,12 +26,16 @@ GRID_SIZE = 6
 PATH = dirname(__file__)
 IMAGE_PATH = join(PATH, "asset", "img")
 
-BACKGROUND = Surface((SCREEN.get_width(), SCREEN.get_height()))
-BACKGROUND.fill((128, 128, 128))
+BACKGROUND = smoothscale(image.load(join(IMAGE_PATH, "background.png")),
+                         (SCREEN.get_width(), SCREEN.get_height()))
 
-PLAYGROUND = Surface((SCREEN.get_height(), SCREEN.get_height()))
-PLAYGROUND.fill((0, 0, 0))
-PLAYGROUND.set_alpha(100)
+PLAYGROUND = BACKGROUND.copy()
+
+PLAYGROUND_LENGTH = SCREEN.get_height() * (9 / 10)
+
+PLAYGROUND_OFFSET = (SCREEN.get_height() - PLAYGROUND_LENGTH) / 2
+
+PLAYGROUND = gaussian_blur(PLAYGROUND, 5)
 
 
 @dataclass
@@ -46,7 +52,7 @@ def get_drop_images() -> list[Status]:
     drop_images = [image.load(i).convert_alpha() for i in drop_image_paths]
 
     max_length = max(max(i.get_size()) for i in drop_images[:130])
-    radio = PLAYGROUND.get_width() / GRID_SIZE / max_length
+    radio = PLAYGROUND_LENGTH / GRID_SIZE / max_length
 
     drop_images = [smoothscale(i, (i.get_width() * radio,
                                    i.get_height() * radio)) for i in drop_images]
@@ -65,7 +71,7 @@ def get_droplet_images() -> list[Status]:
 
     max_length = max(max(i.get_size()) for i in droplet_images[:3])
 
-    radio = PLAYGROUND.get_width() / GRID_SIZE / max_length / 3  # droplet is 3 times smaller than a drop
+    radio = PLAYGROUND_LENGTH / GRID_SIZE / max_length / 3  # droplet is 3 times smaller than a drop
 
     droplet_images = [smoothscale(i, (i.get_width() * radio,
                                       i.get_height() * radio)) for i in droplet_images]

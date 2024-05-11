@@ -1,10 +1,12 @@
-import pygame
 import random
+import pygame
 
 from collections import namedtuple
+
+from pygame import Rect
 from pygame.sprite import Group
 
-from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE
+from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH
 from ten_drops.drop import Drop
 
 Level = namedtuple("Level", "state0, state1, state2, state3")
@@ -45,27 +47,34 @@ class Game:
                     self.run = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
-
-                    row = mouse_y // (PLAYGROUND.get_height() // GRID_SIZE)
-                    col = mouse_x // (PLAYGROUND.get_width() // GRID_SIZE)
+                    row = (mouse_y - PLAYGROUND_OFFSET) // (PLAYGROUND_LENGTH // GRID_SIZE)
+                    col = (mouse_x - PLAYGROUND_OFFSET) // (PLAYGROUND_LENGTH // GRID_SIZE)
 
                     for i in self.drops:
-                        if i.row == row and i.col == col:
+                        if i.row == row and i.col == col and len(self.droplets) == 0:
                             i.click()
 
                 if event.type == pygame.MOUSEMOTION:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
-                    col = mouse_x // (PLAYGROUND.get_width() // GRID_SIZE)
-                    row = mouse_y // (PLAYGROUND.get_height() // GRID_SIZE)
+                    row = (mouse_y - PLAYGROUND_OFFSET) // (PLAYGROUND_LENGTH // GRID_SIZE)
+                    col = (mouse_x - PLAYGROUND_OFFSET) // (PLAYGROUND_LENGTH // GRID_SIZE)
                     for i in self.drops:
                         if i.row == row and i.col == col and (row, col) != mouse_hover_pos:
                             i.mouse_hover()
                     mouse_hover_pos = (row, col)
 
-            SCREEN.blits([
-                (BACKGROUND, (0, 0)),
-                (PLAYGROUND, (0, 0))
-            ])
+            SCREEN.blit(BACKGROUND, (0, 0))
+
+            SCREEN.blit(PLAYGROUND, (PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
+                        Rect(PLAYGROUND_OFFSET, PLAYGROUND_OFFSET,
+                             PLAYGROUND_LENGTH, PLAYGROUND_LENGTH))
+
+            pygame.draw.lines(SCREEN, (255, 255, 255), True, [
+                (PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
+                (PLAYGROUND_OFFSET, PLAYGROUND_LENGTH + PLAYGROUND_OFFSET),
+                (PLAYGROUND_LENGTH + PLAYGROUND_OFFSET, PLAYGROUND_LENGTH + PLAYGROUND_OFFSET),
+                (PLAYGROUND_LENGTH + PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
+            ], 1)
 
             self.drops.update(self.drops, self.droplets)
 
