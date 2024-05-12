@@ -43,25 +43,20 @@ class Drop(Sprite):
 
         self.action_type = ActionType.change
 
-    def hit(self) -> bool:
-        """when a droplet hits the drop.
-
-        :return: True: the droplet should be deleted.
-                 False: the droplet should be retained.
-        """
+    def hit(self):
         if self.state > len(DROP_IMAGES) - 1:
-            # if two droplets hit same drop and will break, return false to keep the droplet
-            return False
+            # if many droplets hit same drop, ignore the out of bounds
+            return
 
         elif self.state == len(DROP_IMAGES) - 1:
             self.kill()
             self.need_diffuse = True
-            return True
+            return
 
         self.state = self.state + 1
 
         self.action_type = ActionType.change
-        return True
+        return
 
     def update(self):
         if self.action_type == ActionType.hover:

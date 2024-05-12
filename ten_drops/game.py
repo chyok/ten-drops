@@ -86,8 +86,11 @@ class Game:
             self.drops.draw(SCREEN)
             self.droplets.draw(SCREEN)
 
-            for drop in groupcollide(self.drops, self.droplets, dokilla=False, dokillb=True).keys():
+            for drop, droplets in groupcollide(self.drops, self.droplets, dokilla=False, dokillb=False).items():
                 drop.hit()
+
+                droplets[0].kill()  # many droplets hit same drop, only delete one
+
                 if drop.need_diffuse:
                     Droplet.diffusion(drop.row, drop.col, self.droplets)
 
