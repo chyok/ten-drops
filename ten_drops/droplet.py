@@ -1,11 +1,8 @@
-import math
-
-from pygame.sprite import Group, Sprite
+from pygame.sprite import Sprite
 from pygame.transform import rotate
 
 from ten_drops import DROPLET_IMAGES
 from ten_drops import GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH
-from ten_drops import SCREEN
 
 
 class Direction:
@@ -21,16 +18,18 @@ class Droplet(Sprite):
         self.row = row
         self.col = col
         self.direction = direction
-        self.speed = 0.1
+        self.speed = 0.01
 
-    def draw(self):
-        image = DROPLET_IMAGES[0].static
+    def _update_image(self, image):
         if self.direction == Direction.Up:
             image = rotate(image, 90)
         elif self.direction == Direction.Left:
             image = rotate(image, 90 * 2)
         elif self.direction == Direction.Down:
             image = rotate(image, 90 * 3)
+
+        self.image = image
+
         rect = image.get_rect()
 
         rect.x = self.col * (PLAYGROUND_LENGTH // GRID_SIZE) + (
@@ -38,9 +37,9 @@ class Droplet(Sprite):
         rect.y = self.row * (PLAYGROUND_LENGTH // GRID_SIZE) + (
                 PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.height // 2 + PLAYGROUND_OFFSET
 
-        SCREEN.blit(image, rect)
+        self.rect = rect
 
-    def update(self, drops: Group, droplets: Group):
+    def update(self):
         self.row += self.direction[0] * self.speed
         self.col += self.direction[1] * self.speed
         if any([self.row < -0.5,
@@ -48,24 +47,24 @@ class Droplet(Sprite):
                 self.row > GRID_SIZE - 0.5,
                 self.col > GRID_SIZE - 0.5]):
             # The actual animation is offset by half a grid cell
-            droplets.remove(self)
+            self.kill()
             return
-        if self.direction in (Direction.Up, Direction.Left):
-            row, col = math.ceil(self.row), math.ceil(self.col)
-        else:
-            row, col = math.floor(self.row), math.floor(self.col)
+        # if self.direction in (Direction.Up, Direction.Left):
+        #     row, col = math.ceil(self.row), math.ceil(self.col)
+        # else:
+        #     row, col = math.floor(self.row), math.floor(self.col)
+        #
+        # for i in drops:
+        #     if i.row == row and i.col == col:
+        #         if i.hit():
+        #             self.kill()
+        #         return
 
-        for i in drops:
-            if i.row == row and i.col == col:
-                if i.hit():
-                    droplets.remove(self)
-                return
-
-        self.draw()
+        self._update_image(DROPLET_IMAGES[0].static)
 
     @classmethod
-    def diffusion(cls, row, col) -> list["Droplet"]:
+    def diffusion(cls, row, col, *group) -> list["Droplet"]:
         droplets = []
         for direction in [Direction.Down, Direction.Up, Direction.Left, Direction.Right]:
-            droplets.append(Droplet(row, col, direction))
+            droplets.append(Droplet(row, col, direction, *group))
         return droplets

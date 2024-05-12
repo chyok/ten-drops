@@ -1,9 +1,6 @@
-from typing import Literal
-
-from pygame.sprite import Sprite, Group
+from pygame.sprite import Sprite
 
 from ten_drops import DROP_IMAGES, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH
-from ten_drops.droplet import Droplet
 
 
 class ActionType:
@@ -13,14 +10,14 @@ class ActionType:
 
 
 class Drop(Sprite):
-    def __init__(self, row, col, state: Literal[0, 1, 2, 3] = 0, *groups):
+    def __init__(self, row, col, state=0, *groups):
         super().__init__(*groups)
         self.row = row
         self.col = col
         self.state = state
-        self.radius = 10
         self.action_type = ActionType.static
         self.action_count = 0
+        self.need_diffuse = False
         self._update_image(DROP_IMAGES[self.state].static)
 
     def _update_image(self, image):
@@ -37,28 +34,36 @@ class Drop(Sprite):
             # ignore click when changing
             return
 
+        if self.state >= len(DROP_IMAGES) - 1:
+            self.kill()
+            self.need_diffuse = True
+            return
+
         self.state = self.state + 1
 
-        self.radius = (PLAYGROUND_LENGTH // GRID_SIZE // 2 // 2) + self.state * 5
         self.action_type = ActionType.change
 
     def hit(self) -> bool:
-        if self.state + 1 > len(DROP_IMAGES):
+        """when a droplet hits the drop.
+
+        :return: True: the droplet should be deleted.
+                 False: the droplet should be retained.
+        """
+        if self.state > len(DROP_IMAGES) - 1:
             # if two droplets hit same drop and will break, return false to keep the droplet
             return False
 
+        elif self.state == len(DROP_IMAGES) - 1:
+            self.kill()
+            self.need_diffuse = True
+            return True
+
         self.state = self.state + 1
 
-        self.radius = (PLAYGROUND_LENGTH // GRID_SIZE // 2 // 2) + self.state * 5
         self.action_type = ActionType.change
         return True
 
-    def update(self, drops: Group, droplets: Group):
-        if self.state >= len(DROP_IMAGES):
-            drops.remove(self)
-            droplets.add(Droplet.diffusion(self.row, self.col))
-            return
-
+    def update(self):
         if self.action_type == ActionType.hover:
             all_count = len(DROP_IMAGES[self.state].action)
             if self.action_count < all_count:

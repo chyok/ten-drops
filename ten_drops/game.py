@@ -4,10 +4,11 @@ import pygame
 from collections import namedtuple
 
 from pygame import Rect
-from pygame.sprite import Group
+from pygame.sprite import Group, groupcollide
 
 from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH
 from ten_drops.drop import Drop
+from ten_drops.droplet import Droplet
 
 Level = namedtuple("Level", "state0, state1, state2, state3")
 Levels = [Level(2, 5, 8, 9),
@@ -33,11 +34,11 @@ class Game:
                     col = random.randint(0, GRID_SIZE - 1)
                     if (row, col) not in used_positions:
                         used_positions.add((row, col))
-                        self.drops.add(Drop(row, col, state))
+                        Drop(row, col, state, self.drops)
                         break
 
     def start(self):
-        mouse_hover_pos = (-1, -1)
+        last_hover_rect = Rect(0, 0, 0, 0)
         self._init_grid()
 
         while self.run:
@@ -47,21 +48,24 @@ class Game:
                     self.run = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
-                    row = (mouse_y - PLAYGROUND_OFFSET) // (PLAYGROUND_LENGTH // GRID_SIZE)
-                    col = (mouse_x - PLAYGROUND_OFFSET) // (PLAYGROUND_LENGTH // GRID_SIZE)
-
                     for i in self.drops:
-                        if i.row == row and i.col == col and len(self.droplets) == 0:
+                        if i.rect.collidepoint(mouse_x, mouse_y) and len(self.droplets) == 0:
                             i.click()
+                            if i.need_diffuse:
+                                Droplet.diffusion(i.row, i.col, self.droplets)
 
                 if event.type == pygame.MOUSEMOTION:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
-                    row = (mouse_y - PLAYGROUND_OFFSET) // (PLAYGROUND_LENGTH // GRID_SIZE)
-                    col = (mouse_x - PLAYGROUND_OFFSET) // (PLAYGROUND_LENGTH // GRID_SIZE)
+
+                    if not last_hover_rect.collidepoint(mouse_x, mouse_y):
+                        last_hover_rect = Rect(0, 0, 0, 0)
+
                     for i in self.drops:
-                        if i.row == row and i.col == col and (row, col) != mouse_hover_pos:
+                        if i.rect.collidepoint(mouse_x, mouse_y) and not last_hover_rect.collidepoint(mouse_x,
+                                                                                                      mouse_y):
                             i.mouse_hover()
-                    mouse_hover_pos = (row, col)
+                            last_hover_rect = i.rect
+                            break
 
             SCREEN.blit(BACKGROUND, (0, 0))
 
@@ -76,11 +80,16 @@ class Game:
                 (PLAYGROUND_LENGTH + PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
             ], 1)
 
-            self.drops.update(self.drops, self.droplets)
+            self.drops.update()
+            self.droplets.update()
 
             self.drops.draw(SCREEN)
+            self.droplets.draw(SCREEN)
 
-            self.droplets.update(self.drops, self.droplets)
+            for drop in groupcollide(self.drops, self.droplets, dokilla=False, dokillb=True).keys():
+                drop.hit()
+                if drop.need_diffuse:
+                    Droplet.diffusion(drop.row, drop.col, self.droplets)
 
             pygame.display.update()
 
