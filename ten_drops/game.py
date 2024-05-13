@@ -11,19 +11,24 @@ from pygame.sprite import Group, groupcollide
 from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, FONT_PATH
 from ten_drops.drop import Drop
 from ten_drops.droplet import Droplet
-from ten_drops.text import TextHelper
+from ten_drops.panel import Title, Level, Score, HP
+from ten_drops.button import Start, About, Exit
 
-Level = namedtuple("Level", "state0, state1, state2, state3")
-Levels = [Level(2, 5, 8, 9),
-          Level(2, 5, 8, 8)]
+LevelDesign = namedtuple("LevelDesign", "state0, state1, state2, state3")
+Levels = [LevelDesign(2, 5, 8, 9),
+          LevelDesign(2, 5, 8, 8)]
 
 
 class Game:
     def __init__(self):
+        self.start_game = False
         self.run = True
 
         self.drops: Group = Group()
         self.droplets: Group = Group()
+        self.panel: Group = Group()
+        self.buttons: Group = Group()
+
         self.clock = pygame.time.Clock()
         self.level = 1
         self.score = 0
@@ -42,18 +47,30 @@ class Game:
                         Drop(row, col, state, self.drops)
                         break
 
+    def _init_button(self):
+        Start(self.buttons)
+        About(self.buttons)
+        Exit(self.buttons)
+
+    def _init_panel(self):
+        self.panel.empty()
+        Level(self.level, self.panel)
+        Score(self.score, self.panel)
+        HP(self.hp, self.panel)
+
     def start(self):
         last_hover_rect = Rect(0, 0, 0, 0)
         self._init_grid()
-        text = TextHelper()
+        self._init_button()
 
-        while True:
+        while self.run:
             self.clock.tick(30)
 
             for event in pygame.event.get():
 
                 if event.type == pygame.QUIT:
-                    pygame.quit()
+                    self.run = False
+                    break
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -63,6 +80,16 @@ class Game:
                             self.hp = self.hp - 1
                             if i.need_diffuse:
                                 Droplet.diffusion(i.row, i.col, self.droplets)
+
+                    for i in self.buttons:
+                        if i.rect.collidepoint(mouse_x, mouse_y):
+                            if isinstance(i, Start):
+                                self.start_game = True
+                            elif isinstance(i, About):
+                                self.start_game = False
+                            elif isinstance(i, Exit):
+                                self.run = False
+                                break
 
                 if event.type == pygame.MOUSEMOTION:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -77,13 +104,20 @@ class Game:
                             last_hover_rect = i.rect
                             break
 
-            SCREEN.blit(BACKGROUND, (0, 0))
-            text.draw_panel(self.level, self.score, self.hp, self.run)
+                    for i in self.buttons:
+                        if i.rect.collidepoint(mouse_x, mouse_y):
+                            i.mouse_hover()
+                        else:
+                            i.mouse_leave()
 
-            if not self.run:
-                text.draw_title()
+            SCREEN.blit(BACKGROUND, (0, 0))
+            self.buttons.draw(SCREEN)
+
+            if not self.start_game:
                 pygame.display.update()
                 continue
+
+            self._init_panel()
 
             SCREEN.blit(PLAYGROUND, (PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
                         Rect(PLAYGROUND_OFFSET, PLAYGROUND_OFFSET,
@@ -101,6 +135,7 @@ class Game:
 
             self.drops.draw(SCREEN)
             self.droplets.draw(SCREEN)
+            self.panel.draw(SCREEN)
 
             for drop, droplets in groupcollide(self.drops, self.droplets, dokilla=False, dokillb=False).items():
                 drop.hit()
@@ -116,3 +151,5 @@ class Game:
                 print("win!")
                 self.level += 1
                 self._init_grid()
+
+        pygame.quit()
