@@ -1,4 +1,6 @@
 import random
+import time
+
 import pygame
 
 from collections import namedtuple
@@ -6,9 +8,10 @@ from collections import namedtuple
 from pygame import Rect
 from pygame.sprite import Group, groupcollide
 
-from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH
+from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, FONT_PATH
 from ten_drops.drop import Drop
 from ten_drops.droplet import Droplet
+from ten_drops.text import TextHelper
 
 Level = namedtuple("Level", "state0, state1, state2, state3")
 Levels = [Level(2, 5, 8, 9),
@@ -17,11 +20,13 @@ Levels = [Level(2, 5, 8, 9),
 
 class Game:
     def __init__(self):
-        self.drops: Group = Group()
         self.run = True
+
+        self.drops: Group = Group()
         self.droplets: Group = Group()
         self.clock = pygame.time.Clock()
         self.level = 1
+        self.score = 0
         self.hp = 10
 
     def _init_grid(self):
@@ -40,17 +45,22 @@ class Game:
     def start(self):
         last_hover_rect = Rect(0, 0, 0, 0)
         self._init_grid()
+        text = TextHelper()
 
-        while self.run:
+        while True:
             self.clock.tick(30)
+
             for event in pygame.event.get():
+
                 if event.type == pygame.QUIT:
-                    self.run = False
+                    pygame.quit()
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     for i in self.drops:
                         if i.rect.collidepoint(mouse_x, mouse_y) and len(self.droplets) == 0:
                             i.click()
+                            self.hp = self.hp - 1
                             if i.need_diffuse:
                                 Droplet.diffusion(i.row, i.col, self.droplets)
 
@@ -68,6 +78,12 @@ class Game:
                             break
 
             SCREEN.blit(BACKGROUND, (0, 0))
+            text.draw_panel(self.level, self.score, self.hp, self.run)
+
+            if not self.run:
+                text.draw_title()
+                pygame.display.update()
+                continue
 
             SCREEN.blit(PLAYGROUND, (PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
                         Rect(PLAYGROUND_OFFSET, PLAYGROUND_OFFSET,
@@ -96,14 +112,7 @@ class Game:
 
             pygame.display.update()
 
-            all_exploded = False
-
-            if len(self.drops) <= 0:
-                all_exploded = True
-
-            if all_exploded and len(self.droplets) == 0:
+            if len(self.drops) <= 0 and len(self.droplets) == 0:
                 print("win!")
                 self.level += 1
                 self._init_grid()
-
-        pygame.quit()

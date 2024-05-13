@@ -14,28 +14,15 @@ __all__ = [
     "PLAYGROUND_LENGTH",
     "PLAYGROUND_OFFSET",
     "DROP_IMAGES",
-    "DROPLET_IMAGES"
+    "DROPLET_IMAGES",
+    "FONT_PATH"
 ]
 
 pygame.init()
 pygame.display.set_caption("ten drops")
 
-SCREEN = pygame.display.set_mode((800, 600))
-GRID_SIZE = 6
-
-PATH = dirname(__file__)
-IMAGE_PATH = join(PATH, "asset", "img")
-
-BACKGROUND = smoothscale(image.load(join(IMAGE_PATH, "background.png")),
-                         (SCREEN.get_width(), SCREEN.get_height()))
-
-PLAYGROUND = BACKGROUND.copy()
-
-PLAYGROUND_LENGTH = SCREEN.get_height() * (9 / 10)
-
-PLAYGROUND_OFFSET = (SCREEN.get_height() - PLAYGROUND_LENGTH) / 2
-
-PLAYGROUND = gaussian_blur(PLAYGROUND, 5)
+Path = dirname(__file__)
+ImageFolderPath = join(Path, "asset", "img")
 
 
 @dataclass
@@ -46,7 +33,7 @@ class Status:
 
 
 def get_drop_images() -> list[Status]:
-    drop_image_path = join(IMAGE_PATH, "drop")
+    drop_image_path = join(ImageFolderPath, "drop")
     drop_image_paths = [join(drop_image_path, f"{i}.png") for i in range(134)]
 
     drop_images = [image.load(i).convert_alpha() for i in drop_image_paths]
@@ -64,7 +51,7 @@ def get_drop_images() -> list[Status]:
 
 
 def get_droplet_images() -> list[Status]:
-    droplet_image_path = join(IMAGE_PATH, "droplet")
+    droplet_image_path = join(ImageFolderPath, "droplet")
     droplet_image_paths = [join(droplet_image_path, f"{i}.png") for i in range(7)]
 
     droplet_images = [image.load(i).convert_alpha() for i in droplet_image_paths]
@@ -79,5 +66,22 @@ def get_droplet_images() -> list[Status]:
     return [Status(action=droplet_images[:3], change_action=droplet_images[3:], static=droplet_images[1])]
 
 
+SCREEN = pygame.display.set_mode((800, 600))
+GRID_SIZE = 6
+
+FONT_PATH = join(Path, "asset", "font", "kust.ttf")
+
+BACKGROUND = smoothscale(image.load(join(ImageFolderPath, "background.png")),
+                         (SCREEN.get_width(), SCREEN.get_height()))
+
+PLAYGROUND = BACKGROUND.copy()
+
+PLAYGROUND_LENGTH = SCREEN.get_height() * (9 / 10)
+
+PLAYGROUND_OFFSET = (SCREEN.get_height() - PLAYGROUND_LENGTH) / 2
+
+PLAYGROUND = gaussian_blur(PLAYGROUND, 5)
+
 DROP_IMAGES = get_drop_images()
+
 DROPLET_IMAGES = get_droplet_images()
