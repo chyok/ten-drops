@@ -18,7 +18,7 @@ class Droplet(Sprite):
         self.row = row
         self.col = col
         self.direction = direction
-        self.speed = 0.01
+        self.speed = 0.1
 
     def _update_image(self, image):
         if self.direction == Direction.Up:
@@ -49,16 +49,6 @@ class Droplet(Sprite):
             # The actual animation is offset by half a grid cell
             self.kill()
             return
-        # if self.direction in (Direction.Up, Direction.Left):
-        #     row, col = math.ceil(self.row), math.ceil(self.col)
-        # else:
-        #     row, col = math.floor(self.row), math.floor(self.col)
-        #
-        # for i in drops:
-        #     if i.row == row and i.col == col:
-        #         if i.hit():
-        #             self.kill()
-        #         return
 
         self._update_image(DROPLET_IMAGES[0].static)
 
