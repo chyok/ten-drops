@@ -1,5 +1,4 @@
 import random
-import time
 
 import pygame
 
@@ -11,8 +10,8 @@ from pygame.sprite import Group, groupcollide
 from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, FONT_PATH
 from ten_drops.drop import Drop
 from ten_drops.droplet import Droplet
-from ten_drops.panel import Title, Level, Score, HP
-from ten_drops.button import Start, About, Exit
+from ten_drops.panel import Title, Level, Score, HP, About
+from ten_drops.button import StartButton, AboutButton, ExitButton
 
 LevelDesign = namedtuple("LevelDesign", "state0, state1, state2, state3")
 Levels = [LevelDesign(2, 5, 8, 9),
@@ -27,6 +26,7 @@ class Game:
         self.drops: Group = Group()
         self.droplets: Group = Group()
         self.panel: Group = Group()
+        self.about_panel: Group = Group()
         self.buttons: Group = Group()
 
         self.clock = pygame.time.Clock()
@@ -48,9 +48,9 @@ class Game:
                         break
 
     def _init_button(self):
-        Start(self.buttons)
-        About(self.buttons)
-        Exit(self.buttons)
+        StartButton(self.buttons)
+        AboutButton(self.buttons)
+        ExitButton(self.buttons)
 
     def _init_panel(self):
         self.panel.empty()
@@ -58,10 +58,15 @@ class Game:
         Score(self.score, self.panel)
         HP(self.hp, self.panel)
 
+    def _init_about_panel(self):
+        About(self.about_panel)
+        Title(self.about_panel)
+
     def start(self):
         last_hover_rect = Rect(0, 0, 0, 0)
         self._init_grid()
         self._init_button()
+        self._init_about_panel()
 
         while self.run:
             self.clock.tick(30)
@@ -83,11 +88,11 @@ class Game:
 
                     for i in self.buttons:
                         if i.rect.collidepoint(mouse_x, mouse_y):
-                            if isinstance(i, Start):
+                            if isinstance(i, StartButton):
                                 self.start_game = True
-                            elif isinstance(i, About):
+                            elif isinstance(i, AboutButton):
                                 self.start_game = False
-                            elif isinstance(i, Exit):
+                            elif isinstance(i, ExitButton):
                                 self.run = False
                                 break
 
@@ -114,6 +119,7 @@ class Game:
             self.buttons.draw(SCREEN)
 
             if not self.start_game:
+                self.about_panel.draw(SCREEN)
                 pygame.display.update()
                 continue
 

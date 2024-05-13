@@ -7,17 +7,6 @@ white = (255, 255, 255)
 grey = (160, 160, 160)
 
 
-class Title(Sprite):
-    TitleFont = Font(FONT_PATH, size=120)
-
-    def __init__(self, *groups):
-        super().__init__(*groups)
-        self.image = self.TitleFont.render("ten drops", True, (51, 255, 255))
-        self.rect = self.image.get_rect()
-        self.rect.x = SCREEN.get_width() - self.image.get_width()
-        self.rect.y = 10
-
-
 class Level(Sprite):
     LevelFont = Font(FONT_PATH, size=45)
 
@@ -50,3 +39,26 @@ class HP(Sprite):
         self.rect.x = PLAYGROUND_LENGTH + PLAYGROUND_OFFSET * 2
         self.rect.y = PLAYGROUND_OFFSET * 7
 
+
+class Title(Sprite):
+    TitleFont = Font(FONT_PATH, size=120)
+
+    def __init__(self, *groups):
+        super().__init__(*groups)
+        self.image = self.TitleFont.render("ten drops", True, (51, 255, 255))
+        self.rect = self.image.get_rect()
+        self.rect.x = (SCREEN.get_width() - self.image.get_width()) / 2
+        self.rect.y = SCREEN.get_height() / 10
+
+
+class About(Sprite):
+    AboutFont = Font(FONT_PATH, size=40)
+
+    def __init__(self, *groups):
+        super().__init__(*groups)
+        self.image = self.AboutFont.render("A ten drops game written in pygame.\n"
+                                           "author: chyok\n"
+                                           "email: chyok@hotmail.com", True, (32, 32, 32))
+        self.rect = self.image.get_rect()
+        self.rect.x = (SCREEN.get_width() - self.image.get_width()) / 2
+        self.rect.y = SCREEN.get_height() / 3

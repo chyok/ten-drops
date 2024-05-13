@@ -1,2 +1,2 @@
 # ten-drops
-A ten drops game written in pygame.
+A ten drops game written in pygame-ce.

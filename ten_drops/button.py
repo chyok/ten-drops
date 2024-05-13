@@ -10,7 +10,7 @@ NormalFont = Font(FONT_PATH, size=65)
 NormalFont.set_italic(True)
 
 
-class Start(Sprite):
+class StartButton(Sprite):
     def __init__(self, *groups):
         super().__init__(*groups)
         self._update_color(white)
@@ -28,7 +28,7 @@ class Start(Sprite):
         self._update_color(white)
 
 
-class About(Sprite):
+class AboutButton(Sprite):
     def __init__(self, *groups):
         super().__init__(*groups)
         self._update_color(white)
@@ -46,7 +46,7 @@ class About(Sprite):
         self._update_color(white)
 
 
-class Exit(Sprite):
+class ExitButton(Sprite):
     def __init__(self, *groups):
         super().__init__(*groups)
         self._update_color(white)
