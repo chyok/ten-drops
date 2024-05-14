@@ -12,6 +12,7 @@ from ten_drops.drop import Drop
 from ten_drops.droplet import Droplet
 from ten_drops.panel import Title, Level, Score, HP, About
 from ten_drops.button import StartButton, AboutButton, ExitButton
+from ten_drops.cover import Cover
 
 LevelDesign = namedtuple("LevelDesign", "state0, state1, state2, state3")
 Levels = [LevelDesign(2, 5, 8, 9),
@@ -26,8 +27,9 @@ class Game:
         self.drops: Group = Group()
         self.droplets: Group = Group()
         self.panel: Group = Group()
-        self.about_panel: Group = Group()
         self.buttons: Group = Group()
+
+        self.cover = Cover()
 
         self.clock = pygame.time.Clock()
         self.level = 1
@@ -59,14 +61,9 @@ class Game:
         Score(self.score, self.panel)
         HP(self.hp, self.panel)
 
-    def _init_about_panel(self):
-        About(self.about_panel)
-        Title(self.about_panel)
-
     def start(self):
         self._init_grid()
         self._init_button()
-        self._init_about_panel()
         self._init_panel()
 
         last_hover_rect = Rect(0, 0, 0, 0)
@@ -125,7 +122,7 @@ class Game:
             self.buttons.draw(SCREEN)
 
             if not self.start_game:
-                self.about_panel.draw(SCREEN)
+                self.cover.draw()
                 pygame.display.update()
                 continue
 
