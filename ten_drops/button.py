@@ -19,7 +19,7 @@ class StartButton(Sprite):
         self.image = NormalFont.render("start", True, color)
         self.rect = self.image.get_rect()
         self.rect.x = PLAYGROUND_LENGTH + PLAYGROUND_OFFSET * 2
-        self.rect.y = PLAYGROUND_OFFSET * 12
+        self.rect.y = PLAYGROUND_OFFSET * 13.5
 
     def mouse_hover(self):
         self._update_color(grey)
@@ -37,7 +37,7 @@ class AboutButton(Sprite):
         self.image = NormalFont.render("about", True, color)
         self.rect = self.image.get_rect()
         self.rect.x = PLAYGROUND_LENGTH + PLAYGROUND_OFFSET * 2
-        self.rect.y = PLAYGROUND_OFFSET * 14
+        self.rect.y = PLAYGROUND_OFFSET * 15.5
 
     def mouse_hover(self):
         self._update_color(grey)
@@ -55,7 +55,7 @@ class ExitButton(Sprite):
         self.image = NormalFont.render("exit", True, color)
         self.rect = self.image.get_rect()
         self.rect.x = PLAYGROUND_LENGTH + PLAYGROUND_OFFSET * 2
-        self.rect.y = PLAYGROUND_OFFSET * 16
+        self.rect.y = PLAYGROUND_OFFSET * 17.5
 
     def mouse_hover(self):
         self._update_color(grey)

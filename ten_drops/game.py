@@ -34,6 +34,8 @@ class Game:
         self.score = 0
         self.hp = 10
 
+        self.combo = 1
+
     def _init_grid(self):
         used_positions = set()
 
@@ -53,7 +55,6 @@ class Game:
         ExitButton(self.buttons)
 
     def _init_panel(self):
-        self.panel.empty()
         Level(self.level, self.panel)
         Score(self.score, self.panel)
         HP(self.hp, self.panel)
@@ -63,10 +64,12 @@ class Game:
         Title(self.about_panel)
 
     def start(self):
-        last_hover_rect = Rect(0, 0, 0, 0)
         self._init_grid()
         self._init_button()
         self._init_about_panel()
+        self._init_panel()
+
+        last_hover_rect = Rect(0, 0, 0, 0)
 
         while self.run:
             self.clock.tick(30)
@@ -81,14 +84,17 @@ class Game:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     for i in self.drops:
                         if i.rect.collidepoint(mouse_x, mouse_y) and len(self.droplets) == 0:
+                            self.combo = 1
                             i.click()
                             self.hp = self.hp - 1
                             if i.need_diffuse:
+                                self.score += 10
                                 Droplet.diffusion(i.row, i.col, self.droplets)
 
                     for i in self.buttons:
                         if i.rect.collidepoint(mouse_x, mouse_y):
                             if isinstance(i, StartButton):
+                                self.level = 1
                                 self.start_game = True
                             elif isinstance(i, AboutButton):
                                 self.start_game = False
@@ -123,8 +129,6 @@ class Game:
                 pygame.display.update()
                 continue
 
-            self._init_panel()
-
             SCREEN.blit(PLAYGROUND, (PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
                         Rect(PLAYGROUND_OFFSET, PLAYGROUND_OFFSET,
                              PLAYGROUND_LENGTH, PLAYGROUND_LENGTH))
@@ -138,6 +142,7 @@ class Game:
 
             self.drops.update()
             self.droplets.update()
+            self.panel.update(self)
 
             self.drops.draw(SCREEN)
             self.droplets.draw(SCREEN)
@@ -149,13 +154,19 @@ class Game:
                 droplets[0].kill()  # many droplets hit same drop, only delete one
 
                 if drop.need_diffuse:
+                    self.score += 10
+                    self.combo += 1
+                    if self.combo in (3, 6, 9, 11, 13, 15, 17, 19, 21):
+                        self.hp += 1
+                    elif self.combo > 21:
+                        self.hp += 1
                     Droplet.diffusion(drop.row, drop.col, self.droplets)
 
             pygame.display.update()
 
             if len(self.drops) <= 0 and len(self.droplets) == 0:
-                print("win!")
                 self.level += 1
+                self.hp += 2
                 self._init_grid()
 
         pygame.quit()
