@@ -1,10 +1,8 @@
 from pygame import Font
 from pygame.sprite import Sprite
+from pygame.color import THECOLORS
 
-from ten_drops import PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, FONT_PATH, SCREEN
-
-white = (255, 255, 255)
-grey = (160, 160, 160)
+from ten_drops import PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, FONT_PATH
 
 NormalFont = Font(FONT_PATH, size=65)
 NormalFont.set_italic(True)
@@ -13,13 +11,13 @@ NormalFont.set_italic(True)
 class BaseButton(Sprite):
     def __init__(self, *groups):
         super().__init__(*groups)
-        self._update_color(white)
+        self._update_color(THECOLORS["white"])
 
     def mouse_hover(self):
-        self._update_color(grey)
+        self._update_color(THECOLORS["grey"])
 
     def mouse_leave(self):
-        self._update_color(white)
+        self._update_color(THECOLORS["white"])
 
     def _update_color(self, color):
         raise NotImplementedError
