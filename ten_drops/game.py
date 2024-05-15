@@ -1,18 +1,17 @@
 import random
-
-import pygame
-
 from collections import namedtuple
 
+import pygame
 from pygame import Rect
 from pygame.sprite import Group, groupcollide
 
-from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, FONT_PATH
-from ten_drops.drop import Drop
-from ten_drops.droplet import Droplet
-from ten_drops.panel import Title, Level, Score, HP, About
+from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, NOTIFICATION
 from ten_drops.button import StartButton, AboutButton, ExitButton
 from ten_drops.cover import Cover
+from ten_drops.drop import Drop
+from ten_drops.droplet import Droplet
+from ten_drops.notification import Notification, NotificationType
+from ten_drops.panel import Level, Score, HP
 
 LevelDesign = namedtuple("LevelDesign", "state0, state1, state2, state3")
 Levels = [LevelDesign(2, 5, 8, 9),
@@ -28,6 +27,7 @@ class Game:
         self.droplets: Group = Group()
         self.panel: Group = Group()
         self.buttons: Group = Group()
+        self.notifications: Group = Group()
 
         self.cover = Cover()
 
@@ -61,10 +61,14 @@ class Game:
         Score(self.score, self.panel)
         HP(self.hp, self.panel)
 
+    def _init_notification(self):
+        Notification(NotificationType.about, self.notifications)
+
     def start(self):
         self._init_grid()
         self._init_button()
         self._init_panel()
+        self._init_notification()
 
         last_hover_rect = Rect(0, 0, 0, 0)
 
@@ -119,6 +123,7 @@ class Game:
                             i.mouse_leave()
 
             SCREEN.blit(BACKGROUND, (0, 0))
+            self.notifications.update()
             self.buttons.draw(SCREEN)
 
             if not self.start_game:
@@ -144,6 +149,7 @@ class Game:
             self.drops.draw(SCREEN)
             self.droplets.draw(SCREEN)
             self.panel.draw(SCREEN)
+            self.notifications.draw(SCREEN)
 
             for drop, droplets in groupcollide(self.drops, self.droplets, dokilla=False, dokillb=False).items():
                 drop.hit()

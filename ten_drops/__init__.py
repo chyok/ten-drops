@@ -13,6 +13,7 @@ __all__ = [
     "PLAYGROUND",
     "PLAYGROUND_LENGTH",
     "PLAYGROUND_OFFSET",
+    "NOTIFICATION",
     "DROP_IMAGES",
     "DROPLET_IMAGES",
     "FONT_PATH"
@@ -73,6 +74,9 @@ FONT_PATH = join(Path, "asset", "font", "kust.ttf")
 
 BACKGROUND = smoothscale(image.load(join(ImageFolderPath, "background.png")),
                          (SCREEN.get_width(), SCREEN.get_height()))
+
+NOTIFICATION = smoothscale(image.load(join(ImageFolderPath, "notification.png")),
+                           (SCREEN.get_width() / 1.5, SCREEN.get_height() / 1.5))
 
 PLAYGROUND = BACKGROUND.copy()
 
