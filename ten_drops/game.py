@@ -3,22 +3,33 @@ from collections import namedtuple
 
 import pygame
 from pygame import Rect
-from pygame.sprite import Group, groupcollide
+from pygame.sprite import Group, groupcollide, GroupSingle
 
-from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, NOTIFICATION
+from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH
 from ten_drops.button import StartButton, AboutButton, ExitButton
 from ten_drops.cover import Cover
 from ten_drops.drop import Drop
 from ten_drops.droplet import Droplet
-from ten_drops.notification import Notification, NotificationType
+from ten_drops.notification import Notice, NoticeType
 from ten_drops.panel import Level, Score, HP
 
 LevelDesign = namedtuple("LevelDesign", "state0, state1, state2, state3")
-Levels = [LevelDesign(2, 5, 8, 9),
+Levels = [LevelDesign(3, 5, 7, 9),
+          LevelDesign(2, 5, 8, 8),
+          LevelDesign(2, 5, 8, 6),
+          LevelDesign(2, 5, 8, 8),
+          LevelDesign(2, 5, 8, 8),
+          LevelDesign(2, 5, 8, 8),
+          LevelDesign(2, 5, 8, 8),
           LevelDesign(2, 5, 8, 8)]
 
 
 class Game:
+    level: int
+    score: int
+    hp: int
+    combo: int
+
     def __init__(self):
         self.start_game = False
         self.run = True
@@ -27,21 +38,27 @@ class Game:
         self.droplets: Group = Group()
         self.panel: Group = Group()
         self.buttons: Group = Group()
-        self.notifications: Group = Group()
+        self.notifications: GroupSingle = GroupSingle()
 
         self.cover = Cover()
 
         self.clock = pygame.time.Clock()
+
+    def _init_game_data(self):
         self.level = 1
         self.score = 0
         self.hp = 10
-
         self.combo = 1
 
     def _init_grid(self):
         used_positions = set()
 
-        for state, count in enumerate(Levels[self.level - 1]):
+        if self.level - 1 > len(Levels):
+            level = Levels[-1]
+        else:
+            level = Levels[self.level - 1]
+
+        for state, count in enumerate(level):
             for _ in range(count):
                 while True:
                     row = random.randint(0, GRID_SIZE - 1)
@@ -61,14 +78,24 @@ class Game:
         Score(self.score, self.panel)
         HP(self.hp, self.panel)
 
-    def _init_notification(self):
-        Notification(NotificationType.about, self.notifications)
+    def notify(self, _type):
+        if _type == NoticeType.success:
+            text = "Well Done, + 2 drops\nNext Level"
+        elif _type == NoticeType.failed:
+            text = f"You Lost\nYour Score: {self.score}"
+        else:
+            text = ("The game and water drop assets are \n"
+                    "from the Flash game of the same name.\n"
+                    "\n\n\nAuthor: chyok\n"
+                    "Email:  chyok@hotmail.com\nGithub: https://github.com/chyok\n"
+                    "\nimplemented using pygame-ce.")
+
+        Notice(_type, text, self.notifications)
 
     def start(self):
-        self._init_grid()
+        self._init_game_data()
         self._init_button()
         self._init_panel()
-        self._init_notification()
 
         last_hover_rect = Rect(0, 0, 0, 0)
 
@@ -83,6 +110,10 @@ class Game:
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
+                    if len(self.notifications) > 0:
+                        self.notifications.empty()
+                        continue
+
                     for i in self.drops:
                         if i.rect.collidepoint(mouse_x, mouse_y) and len(self.droplets) == 0:
                             self.combo = 1
@@ -95,10 +126,13 @@ class Game:
                     for i in self.buttons:
                         if i.rect.collidepoint(mouse_x, mouse_y):
                             if isinstance(i, StartButton):
-                                self.level = 1
+                                self.drops.empty()
+                                self.droplets.empty()
+                                self._init_game_data()
+                                self._init_grid()
                                 self.start_game = True
                             elif isinstance(i, AboutButton):
-                                self.start_game = False
+                                self.notify(NoticeType.about)
                             elif isinstance(i, ExitButton):
                                 self.run = False
                                 break
@@ -123,11 +157,12 @@ class Game:
                             i.mouse_leave()
 
             SCREEN.blit(BACKGROUND, (0, 0))
-            self.notifications.update()
             self.buttons.draw(SCREEN)
+            self.notifications.update()
 
             if not self.start_game:
                 self.cover.draw()
+                self.notifications.draw(SCREEN)
                 pygame.display.update()
                 continue
 
@@ -167,9 +202,14 @@ class Game:
 
             pygame.display.update()
 
-            if len(self.drops) <= 0 and len(self.droplets) == 0:
+            if len(self.droplets) == 0 and self.hp <= 0:
+                self.notify(NoticeType.failed)
+                self.start_game = False
+
+            elif len(self.drops) <= 0 and len(self.droplets) == 0:
                 self.level += 1
                 self.hp += 2
+                self.notify(NoticeType.success)
                 self._init_grid()
 
         pygame.quit()

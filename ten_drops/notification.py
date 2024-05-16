@@ -1,50 +1,50 @@
 import pygame
+
+from collections import namedtuple
+
 from pygame import Surface, Font
 from pygame.color import THECOLORS
 from pygame.sprite import Sprite
 
-from ten_drops import DROP_IMAGES, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, NOTIFICATION, FONT_PATH, SCREEN
+from ten_drops import NOTIFICATION, FONT_PATH, TEXT_FONT_PATH
+
+_NType = namedtuple("_NType", "name font color")
 
 
-class NotificationType:
+class NoticeType:
     about = "about"
     failed = "failed"
     success = "success"
 
 
-AboutFont = Font(FONT_PATH, size=45)
-FailedFont = Font(FONT_PATH, size=45)
-SuccessFont = Font(FONT_PATH, size=45)
+text_font = Font(TEXT_FONT_PATH, size=16)
+text_font.set_bold(True)
 
-TextDict = {
-    NotificationType.about: "this is about",
-    NotificationType.failed: "You Failed",
-    NotificationType.success: "drops +1"
+TextDict: dict[str, _NType] = {
+    NoticeType.about: _NType("about", text_font, THECOLORS["white"]),
+    NoticeType.failed: _NType("failed", Font(FONT_PATH, size=45), THECOLORS["white"]),
+    NoticeType.success: _NType("failed", Font(FONT_PATH, size=45), THECOLORS["white"])
 }
 
 
-class Notification(Sprite):
-    def __init__(self, _type, *groups):
+class Notice(Sprite):
+    def __init__(self, _type, text, *groups):
         super().__init__(*groups)
-        self.text = TextDict[_type]
+        self._notification = TextDict[_type]
+
         self.text_area = Surface((NOTIFICATION.get_width() * 0.8, NOTIFICATION.get_height() * 0.5),
                                  pygame.SRCALPHA)
         self.image = NOTIFICATION.copy()
         self.rect = self.image.get_rect()
+        self.rect.y = -self.rect.height
 
-    # @staticmethod
-    # def _init_about():
-    #     text = "this is text"
-    #     return AboutFont.render(text, True, THECOLORS["white"])
-    #
-    # def _init(self, text):
-    #     self.text_area.blit(text, (0, 0))
-    #     self.image.blit(self.text_area,
-    #                     ((self.image.get_width() - self.text_area.get_width()) / 1.8,
-    #                      NOTIFICATION.get_height() * 0.4))
-    #
-    # def update(self):
-    #     if self.type == NotificationType.about:
-    #         text = self._init_about()
-    #
-    #     self.text_area.blit(text, (0, 0))
+        text_surface = self._notification.font.render(text, True, self._notification.color)
+
+        self.text_area.blit(text_surface, (0, 0))
+        self.image.blit(self.text_area,
+                        ((self.image.get_width() - self.text_area.get_width()) / 1.8,
+                         NOTIFICATION.get_height() * 0.4))
+
+    def update(self):
+        if self.rect.y < 0:
+            self.rect.y += 25

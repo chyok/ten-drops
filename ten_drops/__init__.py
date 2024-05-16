@@ -16,7 +16,8 @@ __all__ = [
     "NOTIFICATION",
     "DROP_IMAGES",
     "DROPLET_IMAGES",
-    "FONT_PATH"
+    "FONT_PATH",
+    "TEXT_FONT_PATH"
 ]
 
 pygame.init()
@@ -71,6 +72,7 @@ SCREEN = pygame.display.set_mode((800, 600))
 GRID_SIZE = 6
 
 FONT_PATH = join(Path, "asset", "font", "kust.ttf")
+TEXT_FONT_PATH = join(Path, "asset", "font", "FiraCode-Regular.ttf")
 
 BACKGROUND = smoothscale(image.load(join(ImageFolderPath, "background.png")),
                          (SCREEN.get_width(), SCREEN.get_height()))
