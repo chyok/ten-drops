@@ -17,19 +17,26 @@ __all__ = [
     "DROP_IMAGES",
     "DROPLET_IMAGES",
     "FONT_PATH",
-    "TEXT_FONT_PATH"
+    "TEXT_FONT_PATH",
+    "BREAK_SOUND",
+    "GROW_SOUND",
+    "HP_SOUND"
 ]
 
 pygame.init()
+pygame.mixer.init()
+
 pygame.display.set_caption("ten drops")
 
 Path = dirname(__file__)
 ImageFolderPath = join(Path, "asset", "img")
+AudioFolderPath = join(Path, "asset", "audio")
+
 pygame.display.set_icon(pygame.image.load(join(ImageFolderPath, "game.ico")))
 
 cursor = pygame.image.load(join(ImageFolderPath, "cursor.png"))
 
-cursor = pygame.cursors.Cursor((10, 0),  cursor)
+cursor = pygame.cursors.Cursor((10, 0), cursor)
 
 pygame.mouse.set_cursor(cursor)
 
@@ -100,3 +107,7 @@ PLAYGROUND = gaussian_blur(PLAYGROUND, 5)
 DROP_IMAGES = get_drop_images()
 
 DROPLET_IMAGES = get_droplet_images()
+
+BREAK_SOUND = pygame.mixer.Sound(join(AudioFolderPath, "break.mp3"))
+GROW_SOUND = pygame.mixer.Sound(join(AudioFolderPath, "grow.mp3"))
+HP_SOUND = pygame.mixer.Sound(join(AudioFolderPath, "hp.mp3"))

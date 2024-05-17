@@ -1,7 +1,7 @@
 from pygame.sprite import Sprite
 from pygame.transform import rotate
 
-from ten_drops import DROPLET_IMAGES
+from ten_drops import DROPLET_IMAGES, BREAK_SOUND
 from ten_drops import GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH
 
 
@@ -54,6 +54,7 @@ class Droplet(Sprite):
 
     @classmethod
     def diffusion(cls, row, col, *group) -> list["Droplet"]:
+        BREAK_SOUND.play()
         droplets = []
         for direction in [Direction.Down, Direction.Up, Direction.Left, Direction.Right]:
             droplets.append(Droplet(row, col, direction, *group))

@@ -5,7 +5,7 @@ import pygame
 from pygame import Rect
 from pygame.sprite import Group, groupcollide, GroupSingle
 
-from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH
+from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, HP_SOUND
 from ten_drops.button import StartButton, AboutButton, ExitButton
 from ten_drops.cover import Cover
 from ten_drops.drop import Drop
@@ -14,14 +14,15 @@ from ten_drops.notification import Notice, NoticeType
 from ten_drops.panel import Level, Score, HP
 
 LevelDesign = namedtuple("LevelDesign", "state0, state1, state2, state3")
-Levels = [LevelDesign(3, 5, 7, 9),
-          LevelDesign(2, 5, 8, 8),
-          LevelDesign(2, 5, 8, 6),
-          LevelDesign(2, 5, 8, 8),
-          LevelDesign(2, 5, 8, 8),
-          LevelDesign(2, 5, 8, 8),
-          LevelDesign(2, 5, 8, 8),
-          LevelDesign(2, 5, 8, 8)]
+Levels = [LevelDesign(2, 5, 8, 9),
+          LevelDesign(2, 6, 7, 8),
+          LevelDesign(3, 7, 7, 7),
+          LevelDesign(3, 7, 6, 6),
+          LevelDesign(4, 7, 6, 5),
+          LevelDesign(4, 8, 6, 5),
+          LevelDesign(4, 8, 5, 5),
+          LevelDesign(5, 9, 3, 5),
+          LevelDesign(6, 9, 4, 5)]
 
 
 class Game:
@@ -53,8 +54,8 @@ class Game:
     def _init_grid(self):
         used_positions = set()
 
-        if self.level - 1 > len(Levels):
-            level = Levels[-1]
+        if self.level - 1 >= len(Levels):
+            level = Levels[random.randint(-5, -1)]
         else:
             level = Levels[self.level - 1]
 
@@ -194,22 +195,24 @@ class Game:
                 if drop.need_diffuse:
                     self.score += 10
                     self.combo += 1
-                    if self.combo in (3, 6, 9, 11, 13, 15, 17, 19, 21):
+                    if self.combo in (3, 6, 9, 12, 15, 18, 20):
+                        HP_SOUND.play()
                         self.hp += 1
                     elif self.combo > 21:
+                        HP_SOUND.play()
                         self.hp += 1
                     Droplet.diffusion(drop.row, drop.col, self.droplets)
 
             pygame.display.update()
 
-            if len(self.droplets) == 0 and self.hp <= 0:
-                self.notify(NoticeType.failed)
-                self.start_game = False
-
-            elif len(self.drops) <= 0 and len(self.droplets) == 0:
+            if len(self.drops) <= 0 and len(self.droplets) == 0:
                 self.level += 1
                 self.hp += 2
                 self.notify(NoticeType.success)
                 self._init_grid()
+
+            if len(self.droplets) == 0 and self.hp <= 0:
+                self.notify(NoticeType.failed)
+                self.start_game = False
 
         pygame.quit()

@@ -1,6 +1,7 @@
+import pygame
 from pygame.sprite import Sprite
 
-from ten_drops import DROP_IMAGES, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH
+from ten_drops import DROP_IMAGES, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, GROW_SOUND
 
 
 class ActionType:
@@ -33,6 +34,8 @@ class Drop(Sprite):
         if self.action_type == ActionType.change:
             # ignore click when changing
             return
+
+        GROW_SOUND.play()
 
         if self.state >= len(DROP_IMAGES) - 1:
             self.kill()
@@ -82,3 +85,15 @@ class Drop(Sprite):
     def mouse_hover(self):
         if self.action_type != ActionType.change:
             self.action_type = ActionType.hover
+
+
+class DummyDrop(Sprite):
+    def __init__(self, row, col, *groups):
+        super().__init__(*groups)
+        self.row = row
+        self.col = col
+        self.image = pygame.Surface((PLAYGROUND_LENGTH // GRID_SIZE), (PLAYGROUND_LENGTH // GRID_SIZE), pygame.)
+        rect = self.image.get_rect()
+        rect.x = self.col * (PLAYGROUND_LENGTH // GRID_SIZE)
+        rect.y = self.row * (PLAYGROUND_LENGTH // GRID_SIZE)
+        self.rect = rect
