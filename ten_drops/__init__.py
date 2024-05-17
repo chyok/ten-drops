@@ -1,5 +1,7 @@
 import pygame
 
+from pygame.mixer import SoundType
+
 from os.path import join, dirname
 from dataclasses import dataclass
 
@@ -24,7 +26,13 @@ __all__ = [
 ]
 
 pygame.init()
-pygame.mixer.init()
+
+# To solve the error that occurs on some computers without audio output devices
+_OPEN_SOUND = True
+try:
+    pygame.mixer.init()
+except Exception as e:  # noqa
+    _OPEN_SOUND = False
 
 pygame.display.set_caption("ten drops")
 
@@ -46,6 +54,16 @@ class Status:
     action: list[Surface]
     change_action: list[Surface]
     static: Surface | None = None
+
+
+class Sound:
+    def __init__(self, sound_file: str):
+        if _OPEN_SOUND:
+            self.sound = pygame.mixer.Sound(join(AudioFolderPath, sound_file))
+
+    def play(self):
+        if _OPEN_SOUND:
+            self.sound.play()
 
 
 def get_drop_images() -> list[Status]:
@@ -108,6 +126,6 @@ DROP_IMAGES = get_drop_images()
 
 DROPLET_IMAGES = get_droplet_images()
 
-BREAK_SOUND = pygame.mixer.Sound(join(AudioFolderPath, "break.mp3"))
-GROW_SOUND = pygame.mixer.Sound(join(AudioFolderPath, "grow.mp3"))
-HP_SOUND = pygame.mixer.Sound(join(AudioFolderPath, "hp.mp3"))
+BREAK_SOUND = Sound("break.mp3")
+GROW_SOUND = Sound("grow.mp3")
+HP_SOUND = Sound("hp.mp3")
