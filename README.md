@@ -7,7 +7,7 @@ Click on these water droplets to make them explode until the screen is cleared.
 
 The inspiration and assets all come from the Flash game of the same name.
 
-![example](https://github.com/chyok/ten-drops/assets/32629225/a7023b9f-4035-4290-8b5e-768e119ecc5e)
+![example](https://github.com/chyok/ten-drops/assets/32629225/b8409169-dd31-4912-a91e-5fed288a833c)
 
 ## Installation
 
