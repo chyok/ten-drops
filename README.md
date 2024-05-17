@@ -25,7 +25,7 @@ For other systems, the Python source code can be directly executed.
 
 | Platform | Download Link                                    | 
 |----------|--------------------------------------------------|
-| Windows  | [Download](https://example.com/windows-download) |
+| Windows  | [Download](https://github.com/chyok/ten-drops/releases) |
 
 
 ## License
