@@ -1,6 +1,6 @@
 from pygame import Font
 from pygame.sprite import Sprite
-from pygame.color import THECOLORS
+from pygame.color import Color
 
 from ten_drops import PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, FONT_PATH, SCREEN
 
@@ -14,7 +14,7 @@ class Level(Sprite):
         self._update_image()
 
     def _update_image(self):
-        self.image = self.LevelFont.render(f"level {self.level}", True, THECOLORS["white"])
+        self.image = self.LevelFont.render(f"level {self.level}", True, Color("white"))
         self.rect = self.image.get_rect()
         self.rect.x = PLAYGROUND_LENGTH + PLAYGROUND_OFFSET * 2
         self.rect.y = PLAYGROUND_OFFSET
@@ -33,7 +33,7 @@ class Score(Sprite):
         self._update_image()
 
     def _update_image(self):
-        self.image = self.ScoreFont.render(f"score \n{self.score}", True, THECOLORS["white"])
+        self.image = self.ScoreFont.render(f"score \n{self.score}", True, Color("white"))
         self.rect = self.image.get_rect()
         self.rect.x = PLAYGROUND_LENGTH + PLAYGROUND_OFFSET * 2
         self.rect.y = PLAYGROUND_OFFSET * 4
@@ -51,7 +51,7 @@ class HP(Sprite):
         super().__init__(*groups)
 
     def _update_image(self):
-        self.image = self.HpFont.render(f"drop \n{self.hp}", True, THECOLORS["white"])
+        self.image = self.HpFont.render(f"drop \n{self.hp}", True, Color("white"))
         self.rect = self.image.get_rect()
         self.rect.x = PLAYGROUND_LENGTH + PLAYGROUND_OFFSET * 2
         self.rect.y = PLAYGROUND_OFFSET * 7

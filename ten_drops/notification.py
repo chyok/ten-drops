@@ -3,7 +3,7 @@ import pygame
 from collections import namedtuple
 
 from pygame import Surface, Font
-from pygame.color import THECOLORS
+from pygame.color import Color
 from pygame.sprite import Sprite
 
 from ten_drops import NOTIFICATION, FONT_PATH, TEXT_FONT_PATH
@@ -21,9 +21,9 @@ text_font = Font(TEXT_FONT_PATH, size=16)
 text_font.set_bold(True)
 
 TextDict: dict[str, _NType] = {
-    NoticeType.about: _NType("about", text_font, THECOLORS["white"]),
-    NoticeType.failed: _NType("failed", Font(FONT_PATH, size=45), THECOLORS["white"]),
-    NoticeType.success: _NType("failed", Font(FONT_PATH, size=45), THECOLORS["white"])
+    NoticeType.about: _NType("about", text_font, Color("white")),
+    NoticeType.failed: _NType("failed", Font(FONT_PATH, size=45), Color("white")),
+    NoticeType.success: _NType("failed", Font(FONT_PATH, size=45), Color("white"))
 }
 
 

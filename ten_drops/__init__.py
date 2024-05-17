@@ -25,6 +25,13 @@ pygame.display.set_caption("ten drops")
 
 Path = dirname(__file__)
 ImageFolderPath = join(Path, "asset", "img")
+pygame.display.set_icon(pygame.image.load(join(ImageFolderPath, "game.ico")))
+
+cursor = pygame.image.load(join(ImageFolderPath, "cursor.png"))
+
+cursor = pygame.cursors.Cursor((10, 0),  cursor)
+
+pygame.mouse.set_cursor(cursor)
 
 
 @dataclass
@@ -39,6 +46,7 @@ def get_drop_images() -> list[Status]:
     drop_image_paths = [join(drop_image_path, f"{i}.png") for i in range(134)]
 
     drop_images = [image.load(i).convert_alpha() for i in drop_image_paths]
+    _ = [i.fill(pygame.Color("blue"), special_flags=pygame.BLEND_ADD) for i in drop_images]
 
     max_length = max(max(i.get_size()) for i in drop_images[:130])
     radio = PLAYGROUND_LENGTH / GRID_SIZE / max_length
@@ -57,6 +65,7 @@ def get_droplet_images() -> list[Status]:
     droplet_image_paths = [join(droplet_image_path, f"{i}.png") for i in range(7)]
 
     droplet_images = [image.load(i).convert_alpha() for i in droplet_image_paths]
+    _ = [i.fill(pygame.Color("blue"), special_flags=pygame.BLEND_ADD) for i in droplet_images]
 
     max_length = max(max(i.get_size()) for i in droplet_images[:3])
 

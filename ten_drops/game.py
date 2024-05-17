@@ -80,15 +80,15 @@ class Game:
 
     def notify(self, _type):
         if _type == NoticeType.success:
-            text = "Well Done, + 2 drops\nNext Level"
+            text = "     Well Done!\n     + 2 drops\n\n     Next Level"
         elif _type == NoticeType.failed:
             text = f"You Lost\nYour Score: {self.score}"
         else:
             text = ("The game and water drop assets are \n"
                     "from the Flash game of the same name.\n"
                     "\n\n\nAuthor: chyok\n"
-                    "Email:  chyok@hotmail.com\nGithub: https://github.com/chyok\n"
-                    "\nimplemented using pygame-ce.")
+                    "Email : chyok@hotmail.com\nGithub: https://github.com/chyok\n"
+                    "\nImplemented using pygame-ce.")
 
         Notice(_type, text, self.notifications)
 

@@ -18,7 +18,7 @@ class Droplet(Sprite):
         self.row = row
         self.col = col
         self.direction = direction
-        self.speed = 0.1
+        self.speed = 0.13
 
     def _update_image(self, image):
         if self.direction == Direction.Up:
