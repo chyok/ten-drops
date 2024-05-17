@@ -199,8 +199,9 @@ class Game:
             self.droplets.update()
             self.panel.update(self)
 
-            self.drops.draw(SCREEN)
-            self.droplets.draw(SCREEN)
+            if len(self.notifications) == 0:
+                self.drops.draw(SCREEN)
+                self.droplets.draw(SCREEN)
             self.panel.draw(SCREEN)
             self.notifications.draw(SCREEN)
 
