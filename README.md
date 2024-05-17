@@ -1,5 +1,9 @@
 # Ten Drops
 
+![GitHub License](https://img.shields.io/github/license/chyok/ten-drops)
+![PyPI - Version](https://img.shields.io/pypi/v/ten-drops)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ten-drops)
+
 A ten drops game written in pygame-ce.  
 Click on these water droplets to make them explode until the screen is cleared.
 
