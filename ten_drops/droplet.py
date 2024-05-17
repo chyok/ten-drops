@@ -1,3 +1,5 @@
+from typing import List
+
 from pygame.sprite import Sprite
 from pygame.transform import rotate
 
@@ -53,7 +55,7 @@ class Droplet(Sprite):
         self._update_image(DROPLET_IMAGES[0].static)
 
     @classmethod
-    def diffusion(cls, row, col, *group) -> list["Droplet"]:
+    def diffusion(cls, row, col, *group) -> List["Droplet"]:
         BREAK_SOUND.play()
         droplets = []
         for direction in [Direction.Down, Direction.Up, Direction.Left, Direction.Right]:

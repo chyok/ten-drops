@@ -1,7 +1,6 @@
 import pygame
 
-from pygame.mixer import SoundType
-
+from typing import List
 from os.path import join, dirname
 from dataclasses import dataclass
 
@@ -51,8 +50,8 @@ pygame.mouse.set_cursor(cursor)
 
 @dataclass
 class Status:
-    action: list[Surface]
-    change_action: list[Surface]
+    action: List[Surface]
+    change_action: List[Surface]
     static: Surface | None = None
 
 
@@ -66,7 +65,7 @@ class Sound:
             self.sound.play()
 
 
-def get_drop_images() -> list[Status]:
+def get_drop_images() -> List[Status]:
     drop_image_path = join(ImageFolderPath, "drop")
     drop_image_paths = [join(drop_image_path, f"{i}.png") for i in range(134)]
 
@@ -85,7 +84,7 @@ def get_drop_images() -> list[Status]:
             Status(action=drop_images[115:130], change_action=drop_images[130:134], static=drop_images[126])]
 
 
-def get_droplet_images() -> list[Status]:
+def get_droplet_images() -> List[Status]:
     droplet_image_path = join(ImageFolderPath, "droplet")
     droplet_image_paths = [join(droplet_image_path, f"{i}.png") for i in range(7)]
 

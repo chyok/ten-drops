@@ -1,5 +1,6 @@
 import pygame
 
+from typing import Dict
 from collections import namedtuple
 
 from pygame import Surface, Font
@@ -20,7 +21,7 @@ class NoticeType:
 text_font = Font(TEXT_FONT_PATH, size=16)
 text_font.set_bold(True)
 
-TextDict: dict[str, _NType] = {
+TextDict: Dict[str, _NType] = {
     NoticeType.about: _NType("about", text_font, Color("white")),
     NoticeType.failed: _NType("failed", Font(FONT_PATH, size=45), Color("white")),
     NoticeType.success: _NType("failed", Font(FONT_PATH, size=45), Color("white"))
