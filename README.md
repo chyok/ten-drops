@@ -11,6 +11,13 @@ The inspiration and assets all come from the Flash game of the same name.
 
 ## Installation
 
+### use pip
+```commandline
+pip install ten-drops
+
+ten-drops  // start the game 
+```
+
 ### binary file
 
 Binary files for Windows and Mac that can be directly executed to play the game.  
@@ -20,14 +27,6 @@ For other systems, the Python source code can be directly executed.
 |----------|--------------------------------------------------|
 | Windows  | [Download](https://example.com/windows-download) |
 
-### source code
-Make sure you have Python>=3.11.
-
-```
-cd ten-drops
-pip install pygame-ce==2.4.1
-python main.py
-```
 
 ## License
 
