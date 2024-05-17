@@ -92,8 +92,11 @@ class DummyDrop(Sprite):
         super().__init__(*groups)
         self.row = row
         self.col = col
-        self.image = pygame.Surface((PLAYGROUND_LENGTH // GRID_SIZE), (PLAYGROUND_LENGTH // GRID_SIZE), pygame.)
+        self.image = pygame.Surface(((PLAYGROUND_LENGTH // GRID_SIZE // 2), (PLAYGROUND_LENGTH // GRID_SIZE // 2)),
+                                    pygame.SRCALPHA)
         rect = self.image.get_rect()
-        rect.x = self.col * (PLAYGROUND_LENGTH // GRID_SIZE)
-        rect.y = self.row * (PLAYGROUND_LENGTH // GRID_SIZE)
+        rect.x = self.col * (PLAYGROUND_LENGTH // GRID_SIZE) + (
+                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.width // 2 + PLAYGROUND_OFFSET
+        rect.y = self.row * (PLAYGROUND_LENGTH // GRID_SIZE) + (
+                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.height // 2 + PLAYGROUND_OFFSET
         self.rect = rect

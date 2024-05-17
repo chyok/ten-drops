@@ -5,10 +5,11 @@ import pygame
 from pygame import Rect
 from pygame.sprite import Group, groupcollide, GroupSingle
 
-from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, HP_SOUND
+from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, HP_SOUND, \
+    GROW_SOUND
 from ten_drops.button import StartButton, AboutButton, ExitButton
 from ten_drops.cover import Cover
-from ten_drops.drop import Drop
+from ten_drops.drop import Drop, DummyDrop
 from ten_drops.droplet import Droplet
 from ten_drops.notification import Notice, NoticeType
 from ten_drops.panel import Level, Score, HP
@@ -36,6 +37,7 @@ class Game:
         self.run = True
 
         self.drops: Group = Group()
+        self.dummy_drops: Group = Group()
         self.droplets: Group = Group()
         self.panel: Group = Group()
         self.buttons: Group = Group()
@@ -79,6 +81,11 @@ class Game:
         Score(self.score, self.panel)
         HP(self.hp, self.panel)
 
+    def _init_dummy_drops(self):
+        for i in range(GRID_SIZE):
+            for j in range(GRID_SIZE):
+                DummyDrop(i, j, self.dummy_drops)
+
     def notify(self, _type):
         if _type == NoticeType.success:
             text = "     Well Done!\n     + 2 drops\n\n     Next Level"
@@ -97,6 +104,7 @@ class Game:
         self._init_game_data()
         self._init_button()
         self._init_panel()
+        self._init_dummy_drops()
 
         last_hover_rect = Rect(0, 0, 0, 0)
 
@@ -123,6 +131,15 @@ class Game:
                             if i.need_diffuse:
                                 self.score += 10
                                 Droplet.diffusion(i.row, i.col, self.droplets)
+
+                    if len(self.droplets) == 0:
+                        for j in self.dummy_drops:
+                            if j.rect.collidepoint(mouse_x, mouse_y):
+                                if (j.row, j.col) not in ((i.row, i.col) for i in self.drops):
+                                    GROW_SOUND.play()
+                                    Drop(j.row, j.col, 0, self.drops)
+                                    self.hp -= 1
+                                break
 
                     for i in self.buttons:
                         if i.rect.collidepoint(mouse_x, mouse_y):
