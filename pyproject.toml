@@ -15,3 +15,6 @@ pygame-ce = "^2.4.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+ten-drops = "ten_drops.cli:run"
