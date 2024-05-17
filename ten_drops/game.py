@@ -132,7 +132,7 @@ class Game:
                                 self.score += 10
                                 Droplet.diffusion(i.row, i.col, self.droplets)
 
-                    if len(self.droplets) == 0:
+                    if len(self.droplets) == 0 and self.start_game:
                         for j in self.dummy_drops:
                             if j.rect.collidepoint(mouse_x, mouse_y):
                                 if (j.row, j.col) not in ((i.row, i.col) for i in self.drops):
