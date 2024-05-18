@@ -1,6 +1,6 @@
 import pygame
 
-from typing import List
+from typing import List, Union
 from os.path import join, dirname
 from dataclasses import dataclass
 
@@ -52,7 +52,7 @@ pygame.mouse.set_cursor(cursor)
 class Status:
     action: List[Surface]
     change_action: List[Surface]
-    static: Surface | None = None
+    static: Union[Surface, None] = None
 
 
 class Sound:
