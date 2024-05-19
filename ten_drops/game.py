@@ -93,7 +93,7 @@ class Game:
             text = f"You Lost\nYour Score: {self.score}"
         else:
             text = ("The game and water drop assets are \n"
-                    "from the Flash game of the same name.\n"
+                    "from the Flash game \"Splash Back\".\n"
                     "\n\n\nAuthor: chyok\n"
                     "Email : chyok@hotmail.com\nGithub: https://github.com/chyok\n"
                     "\nImplemented using pygame-ce.")

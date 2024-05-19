@@ -7,7 +7,7 @@
 A ten drops game written in pygame-ce.  
 Click on these water droplets to make them explode until the screen is cleared.
 
-The inspiration and assets all come from the Flash game of the same name.
+The inspiration and assets all come from the Flash game "Splash Back".
 
 ![example](https://github.com/chyok/ten-drops/assets/32629225/b8409169-dd31-4912-a91e-5fed288a833c)
 
