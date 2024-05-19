@@ -14,7 +14,7 @@ URL = 'https://github.com/chyok/ten-drops'
 EMAIL = 'chyok@hotmail.com'
 AUTHOR = 'chyok'
 REQUIRES_PYTHON = '>=3.8.0'
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 
 REQUIRED = [
     'pygame-ce'
