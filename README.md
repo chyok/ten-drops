@@ -23,7 +23,7 @@ ten-drops  // start the game
 
 ### binary file
 
-Binary files for Windows and Mac that can be directly executed to play the game.  
+Binary files for Windows that can be directly executed to play the game.  
 For other systems, the Python source code can be directly executed.
 
 | Platform | Download Link                                           | 
