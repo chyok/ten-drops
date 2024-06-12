@@ -3,9 +3,13 @@ name = "ten-drops"
 version = "1.0.2"
 description = "A ten drops game written in pygame-ce."
 authors = ["chyok <chyok@hotmail.com>"]
+maintainers = ["chyok <chyok@hotmail.com>"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/chyok/ten-drops"
+repository = "https://github.com/chyok/ten-drops"
 packages = [{include = "ten_drops"}]
+include = ["ten_drops/asset"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
