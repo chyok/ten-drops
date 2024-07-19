@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ten-drops"
-version = "1.0.2"
+version = "1.0.3"
 description = "A ten drops game written in pygame-ce."
 authors = ["chyok <chyok@hotmail.com>"]
 maintainers = ["chyok <chyok@hotmail.com>"]
