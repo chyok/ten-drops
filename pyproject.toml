@@ -13,7 +13,7 @@ include = ["ten_drops/asset"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pygame-ce = "^2.4.1"
+pygame-ce = "^2.5.0"
 
 
 [build-system]
