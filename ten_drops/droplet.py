@@ -34,20 +34,32 @@ class Droplet(Sprite):
 
         rect = image.get_rect()
 
-        rect.x = self.col * (PLAYGROUND_LENGTH // GRID_SIZE) + (
-                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.width // 2 + PLAYGROUND_OFFSET
-        rect.y = self.row * (PLAYGROUND_LENGTH // GRID_SIZE) + (
-                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.height // 2 + PLAYGROUND_OFFSET
+        rect.x = (
+            self.col * (PLAYGROUND_LENGTH // GRID_SIZE)
+            + (PLAYGROUND_LENGTH // GRID_SIZE // 2)
+            - rect.width // 2
+            + PLAYGROUND_OFFSET
+        )
+        rect.y = (
+            self.row * (PLAYGROUND_LENGTH // GRID_SIZE)
+            + (PLAYGROUND_LENGTH // GRID_SIZE // 2)
+            - rect.height // 2
+            + PLAYGROUND_OFFSET
+        )
 
         self.rect = rect
 
     def update(self):
         self.row += self.direction[0] * self.speed
         self.col += self.direction[1] * self.speed
-        if any([self.row < -0.5,
+        if any(
+            [
+                self.row < -0.5,
                 self.col < -0.5,
                 self.row > GRID_SIZE - 0.5,
-                self.col > GRID_SIZE - 0.5]):
+                self.col > GRID_SIZE - 0.5,
+            ]
+        ):
             # The actual animation is offset by half a grid cell
             self.kill()
             return
@@ -58,6 +70,11 @@ class Droplet(Sprite):
     def diffusion(cls, row, col, *group) -> List["Droplet"]:
         BREAK_SOUND.play()
         droplets = []
-        for direction in [Direction.Down, Direction.Up, Direction.Left, Direction.Right]:
+        for direction in [
+            Direction.Down,
+            Direction.Up,
+            Direction.Left,
+            Direction.Right,
+        ]:
             droplets.append(Droplet(row, col, direction, *group))
         return droplets

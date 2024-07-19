@@ -1,7 +1,13 @@
 import pygame
 from pygame.sprite import Sprite
 
-from ten_drops import DROP_IMAGES, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, GROW_SOUND
+from ten_drops import (
+    DROP_IMAGES,
+    GRID_SIZE,
+    PLAYGROUND_OFFSET,
+    PLAYGROUND_LENGTH,
+    GROW_SOUND,
+)
 
 
 class ActionType:
@@ -24,10 +30,18 @@ class Drop(Sprite):
     def _update_image(self, image):
         self.image = image
         rect = self.image.get_rect()
-        rect.x = self.col * (PLAYGROUND_LENGTH // GRID_SIZE) + (
-                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.width // 2 + PLAYGROUND_OFFSET
-        rect.y = self.row * (PLAYGROUND_LENGTH // GRID_SIZE) + (
-                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.height // 2 + PLAYGROUND_OFFSET
+        rect.x = (
+            self.col * (PLAYGROUND_LENGTH // GRID_SIZE)
+            + (PLAYGROUND_LENGTH // GRID_SIZE // 2)
+            - rect.width // 2
+            + PLAYGROUND_OFFSET
+        )
+        rect.y = (
+            self.row * (PLAYGROUND_LENGTH // GRID_SIZE)
+            + (PLAYGROUND_LENGTH // GRID_SIZE // 2)
+            - rect.height // 2
+            + PLAYGROUND_OFFSET
+        )
         self.rect = rect
 
     def click(self):
@@ -74,7 +88,9 @@ class Drop(Sprite):
         elif self.action_type == ActionType.change:
             all_count = len(DROP_IMAGES[self.state - 1].change_action)
             if self.action_count < all_count:
-                self._update_image(DROP_IMAGES[self.state - 1].change_action[self.action_count])
+                self._update_image(
+                    DROP_IMAGES[self.state - 1].change_action[self.action_count]
+                )
                 self.action_count += 1
             else:
                 self.action_count = 0
@@ -92,11 +108,24 @@ class DummyDrop(Sprite):
         super().__init__(*groups)
         self.row = row
         self.col = col
-        self.image = pygame.Surface(((PLAYGROUND_LENGTH // GRID_SIZE // 2), (PLAYGROUND_LENGTH // GRID_SIZE // 2)),
-                                    pygame.SRCALPHA)
+        self.image = pygame.Surface(
+            (
+                (PLAYGROUND_LENGTH // GRID_SIZE // 2),
+                (PLAYGROUND_LENGTH // GRID_SIZE // 2),
+            ),
+            pygame.SRCALPHA,
+        )
         rect = self.image.get_rect()
-        rect.x = self.col * (PLAYGROUND_LENGTH // GRID_SIZE) + (
-                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.width // 2 + PLAYGROUND_OFFSET
-        rect.y = self.row * (PLAYGROUND_LENGTH // GRID_SIZE) + (
-                PLAYGROUND_LENGTH // GRID_SIZE // 2) - rect.height // 2 + PLAYGROUND_OFFSET
+        rect.x = (
+            self.col * (PLAYGROUND_LENGTH // GRID_SIZE)
+            + (PLAYGROUND_LENGTH // GRID_SIZE // 2)
+            - rect.width // 2
+            + PLAYGROUND_OFFSET
+        )
+        rect.y = (
+            self.row * (PLAYGROUND_LENGTH // GRID_SIZE)
+            + (PLAYGROUND_LENGTH // GRID_SIZE // 2)
+            - rect.height // 2
+            + PLAYGROUND_OFFSET
+        )
         self.rect = rect

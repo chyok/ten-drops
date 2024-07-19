@@ -24,7 +24,7 @@ text_font.set_bold(True)
 TextDict: Dict[str, _NType] = {
     NoticeType.about: _NType("about", text_font, Color("white")),
     NoticeType.failed: _NType("failed", Font(FONT_PATH, size=45), Color("white")),
-    NoticeType.success: _NType("failed", Font(FONT_PATH, size=45), Color("white"))
+    NoticeType.success: _NType("failed", Font(FONT_PATH, size=45), Color("white")),
 }
 
 
@@ -33,18 +33,26 @@ class Notice(Sprite):
         super().__init__(*groups)
         self._notification = TextDict[_type]
 
-        self.text_area = Surface((NOTIFICATION.get_width() * 0.8, NOTIFICATION.get_height() * 0.5),
-                                 pygame.SRCALPHA)
+        self.text_area = Surface(
+            (NOTIFICATION.get_width() * 0.8, NOTIFICATION.get_height() * 0.5),
+            pygame.SRCALPHA,
+        )
         self.image = NOTIFICATION.copy()
         self.rect = self.image.get_rect()
         self.rect.y = -self.rect.height
 
-        text_surface = self._notification.font.render(text, True, self._notification.color)
+        text_surface = self._notification.font.render(
+            text, True, self._notification.color
+        )
 
         self.text_area.blit(text_surface, (0, 0))
-        self.image.blit(self.text_area,
-                        ((self.image.get_width() - self.text_area.get_width()) / 1.8,
-                         NOTIFICATION.get_height() * 0.4))
+        self.image.blit(
+            self.text_area,
+            (
+                (self.image.get_width() - self.text_area.get_width()) / 1.8,
+                NOTIFICATION.get_height() * 0.4,
+            ),
+        )
 
     def update(self):
         if self.rect.y < 0:

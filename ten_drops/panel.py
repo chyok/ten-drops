@@ -33,7 +33,9 @@ class Score(Sprite):
         self._update_image()
 
     def _update_image(self):
-        self.image = self.ScoreFont.render(f"score \n{self.score}", True, Color("white"))
+        self.image = self.ScoreFont.render(
+            f"score \n{self.score}", True, Color("white")
+        )
         self.rect = self.image.get_rect()
         self.rect.x = PLAYGROUND_LENGTH + PLAYGROUND_OFFSET * 2
         self.rect.y = PLAYGROUND_OFFSET * 4
@@ -77,9 +79,13 @@ class About(Sprite):
 
     def __init__(self, *groups):
         super().__init__(*groups)
-        self.image = self.AboutFont.render("A ten drops game written in pygame.\n"
-                                           "author: chyok\n"
-                                           "email: chyok@hotmail.com", True, (32, 32, 32))
+        self.image = self.AboutFont.render(
+            "A ten drops game written in pygame.\n"
+            "author: chyok\n"
+            "email: chyok@hotmail.com",
+            True,
+            (32, 32, 32),
+        )
         self.rect = self.image.get_rect()
         self.rect.x = (SCREEN.get_width() - self.image.get_width()) / 2
         self.rect.y = SCREEN.get_height() / 3

@@ -1,12 +1,19 @@
 import random
-from collections import namedtuple
-
 import pygame
-from pygame import Rect
+
+from collections import namedtuple
 from pygame.sprite import Group, groupcollide, GroupSingle
 
-from ten_drops import SCREEN, PLAYGROUND, BACKGROUND, GRID_SIZE, PLAYGROUND_OFFSET, PLAYGROUND_LENGTH, HP_SOUND, \
-    GROW_SOUND
+from ten_drops import (
+    SCREEN,
+    PLAYGROUND,
+    BACKGROUND,
+    GRID_SIZE,
+    PLAYGROUND_OFFSET,
+    PLAYGROUND_LENGTH,
+    HP_SOUND,
+    GROW_SOUND,
+)
 from ten_drops.button import StartButton, AboutButton, ExitButton
 from ten_drops.cover import Cover
 from ten_drops.drop import Drop, DummyDrop
@@ -15,15 +22,17 @@ from ten_drops.notification import Notice, NoticeType
 from ten_drops.panel import Level, Score, HP
 
 LevelDesign = namedtuple("LevelDesign", "state0, state1, state2, state3")
-Levels = [LevelDesign(2, 5, 8, 9),
-          LevelDesign(2, 6, 7, 8),
-          LevelDesign(3, 7, 7, 7),
-          LevelDesign(3, 7, 6, 6),
-          LevelDesign(4, 7, 6, 5),
-          LevelDesign(4, 8, 6, 5),
-          LevelDesign(4, 8, 5, 5),
-          LevelDesign(5, 9, 3, 5),
-          LevelDesign(6, 9, 4, 5)]
+Levels = [
+    LevelDesign(2, 5, 8, 9),
+    LevelDesign(2, 6, 7, 8),
+    LevelDesign(3, 7, 7, 7),
+    LevelDesign(3, 7, 6, 6),
+    LevelDesign(4, 7, 6, 5),
+    LevelDesign(4, 8, 6, 5),
+    LevelDesign(4, 8, 5, 5),
+    LevelDesign(5, 9, 3, 5),
+    LevelDesign(6, 9, 4, 5),
+]
 
 
 class Game:
@@ -92,11 +101,13 @@ class Game:
         elif _type == NoticeType.failed:
             text = f"You Lost\nYour Score: {self.score}"
         else:
-            text = ("The game and water drop assets are \n"
-                    "from the Flash game \"Splash Back\".\n"
-                    "\n\n\nAuthor: chyok\n"
-                    "Email : chyok@hotmail.com\nGithub: https://github.com/chyok\n"
-                    "\nImplemented using pygame-ce.")
+            text = (
+                "The game and water drop assets are \n"
+                'from the Flash game "Splash Back".\n'
+                "\n\n\nAuthor: chyok\n"
+                "Email : chyok@hotmail.com\nGithub: https://github.com/chyok\n"
+                "\nImplemented using pygame-ce."
+            )
 
         Notice(_type, text, self.notifications)
 
@@ -106,7 +117,7 @@ class Game:
         self._init_panel()
         self._init_dummy_drops()
 
-        last_hover_rect = Rect(0, 0, 0, 0)
+        last_hover_rect = pygame.Rect(0, 0, 0, 0)
 
         while self.run:
             self.clock.tick(30)
@@ -124,7 +135,10 @@ class Game:
                         continue
 
                     for i in self.drops:
-                        if i.rect.collidepoint(mouse_x, mouse_y) and len(self.droplets) == 0:
+                        if (
+                            i.rect.collidepoint(mouse_x, mouse_y)
+                            and len(self.droplets) == 0
+                        ):
                             self.combo = 1
                             i.click()
                             self.hp = self.hp - 1
@@ -135,7 +149,9 @@ class Game:
                     if len(self.droplets) == 0 and self.start_game:
                         for j in self.dummy_drops:
                             if j.rect.collidepoint(mouse_x, mouse_y):
-                                if (j.row, j.col) not in ((i.row, i.col) for i in self.drops):
+                                if (j.row, j.col) not in (
+                                    (i.row, i.col) for i in self.drops
+                                ):
                                     GROW_SOUND.play()
                                     Drop(j.row, j.col, 0, self.drops)
                                     self.hp -= 1
@@ -159,11 +175,12 @@ class Game:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
 
                     if not last_hover_rect.collidepoint(mouse_x, mouse_y):
-                        last_hover_rect = Rect(0, 0, 0, 0)
+                        last_hover_rect = pygame.Rect(0, 0, 0, 0)
 
                     for i in self.drops:
-                        if i.rect.collidepoint(mouse_x, mouse_y) and not last_hover_rect.collidepoint(mouse_x,
-                                                                                                      mouse_y):
+                        if i.rect.collidepoint(
+                            mouse_x, mouse_y
+                        ) and not last_hover_rect.collidepoint(mouse_x, mouse_y):
                             i.mouse_hover()
                             last_hover_rect = i.rect
                             break
@@ -184,16 +201,32 @@ class Game:
                 pygame.display.update()
                 continue
 
-            SCREEN.blit(PLAYGROUND, (PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
-                        Rect(PLAYGROUND_OFFSET, PLAYGROUND_OFFSET,
-                             PLAYGROUND_LENGTH, PLAYGROUND_LENGTH))
-
-            pygame.draw.lines(SCREEN, (255, 255, 255), True, [
+            SCREEN.blit(
+                PLAYGROUND,
                 (PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
-                (PLAYGROUND_OFFSET, PLAYGROUND_LENGTH + PLAYGROUND_OFFSET),
-                (PLAYGROUND_LENGTH + PLAYGROUND_OFFSET, PLAYGROUND_LENGTH + PLAYGROUND_OFFSET),
-                (PLAYGROUND_LENGTH + PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
-            ], 1)
+                pygame.Rect(
+                    PLAYGROUND_OFFSET,
+                    PLAYGROUND_OFFSET,
+                    PLAYGROUND_LENGTH,
+                    PLAYGROUND_LENGTH,
+                ),
+            )
+
+            pygame.draw.lines(
+                SCREEN,
+                (255, 255, 255),
+                True,
+                [
+                    (PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
+                    (PLAYGROUND_OFFSET, PLAYGROUND_LENGTH + PLAYGROUND_OFFSET),
+                    (
+                        PLAYGROUND_LENGTH + PLAYGROUND_OFFSET,
+                        PLAYGROUND_LENGTH + PLAYGROUND_OFFSET,
+                    ),
+                    (PLAYGROUND_LENGTH + PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
+                ],
+                1,
+            )
 
             self.drops.update()
             self.droplets.update()
@@ -205,7 +238,9 @@ class Game:
             self.panel.draw(SCREEN)
             self.notifications.draw(SCREEN)
 
-            for drop, droplets in groupcollide(self.drops, self.droplets, dokilla=False, dokillb=False).items():
+            for drop, droplets in groupcollide(
+                self.drops, self.droplets, dokilla=False, dokillb=False
+            ).items():
                 drop.hit()
 
                 droplets[0].kill()  # many droplets hit same drop, only delete one
