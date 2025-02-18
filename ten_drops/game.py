@@ -139,8 +139,9 @@ class Game:
                             i.rect.collidepoint(mouse_x, mouse_y)
                             and len(self.droplets) == 0
                         ):
+                            if not i.click():
+                                continue
                             self.combo = 1
-                            i.click()
                             self.hp = self.hp - 1
                             if i.need_diffuse:
                                 self.score += 10

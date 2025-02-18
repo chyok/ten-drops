@@ -44,21 +44,23 @@ class Drop(Sprite):
         )
         self.rect = rect
 
-    def click(self):
+    def click(self) -> bool:
+        """Return False if the click was ignored."""
         if self.action_type == ActionType.change:
             # ignore click when changing
-            return
+            return False
 
         GROW_SOUND.play()
 
         if self.state >= len(DROP_IMAGES) - 1:
             self.kill()
             self.need_diffuse = True
-            return
+            return True
 
         self.state = self.state + 1
 
         self.action_type = ActionType.change
+        return True
 
     def hit(self):
         if self.state > len(DROP_IMAGES) - 1:
