@@ -136,7 +136,8 @@ class Game:
 
                     for i in self.drops:
                         if (
-                            i.rect.collidepoint(mouse_x, mouse_y)
+                            self.start_game
+                            and i.rect.collidepoint(mouse_x, mouse_y)
                             and len(self.droplets) == 0
                         ):
                             if not i.click():
