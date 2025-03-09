@@ -250,7 +250,7 @@ class Game:
                 if drop.need_diffuse:
                     self.score += 10
                     self.combo += 1
-                    if self.combo in (3, 6, 9, 12, 15, 18, 20):
+                    if self.combo in (3, 6, 9, 12, 15, 18, 21):
                         HP_SOUND.play()
                         self.hp += 1
                     elif self.combo > 21:
