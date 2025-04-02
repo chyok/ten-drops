@@ -230,19 +230,28 @@ class Game:
                 1,
             )
 
-            self.drops.update()
-            self.droplets.update()
+            # freeze the board while a notification is shown
+            paused = len(self.notifications) > 0
+
+            if not paused:
+                self.drops.update()
+                self.droplets.update()
             self.panel.update(self)
 
-            if len(self.notifications) == 0:
+            if not paused:
                 self.drops.draw(SCREEN)
                 self.droplets.draw(SCREEN)
             self.panel.draw(SCREEN)
             self.notifications.draw(SCREEN)
 
-            for drop, droplets in groupcollide(
-                self.drops, self.droplets, dokilla=False, dokillb=False
-            ).items():
+            collisions = (
+                {}
+                if paused
+                else groupcollide(
+                    self.drops, self.droplets, dokilla=False, dokillb=False
+                )
+            )
+            for drop, droplets in collisions.items():
                 drop.hit()
 
                 droplets[0].kill()  # many droplets hit same drop, only delete one
