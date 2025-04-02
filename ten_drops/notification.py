@@ -24,7 +24,7 @@ text_font.set_bold(True)
 TextDict: Dict[str, _NType] = {
     NoticeType.about: _NType("about", text_font, Color("white")),
     NoticeType.failed: _NType("failed", Font(FONT_PATH, size=45), Color("white")),
-    NoticeType.success: _NType("failed", Font(FONT_PATH, size=45), Color("white")),
+    NoticeType.success: _NType("success", Font(FONT_PATH, size=45), Color("white")),
 }
 
 
