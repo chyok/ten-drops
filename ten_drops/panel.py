@@ -49,8 +49,9 @@ class HP(Sprite):
     HpFont = Font(FONT_PATH, size=40)
 
     def __init__(self, hp, *groups):
-        self.hp = hp
         super().__init__(*groups)
+        self.hp = hp
+        self._update_image()
 
     def _update_image(self):
         self.image = self.HpFont.render(f"drop \n{self.hp}", True, Color("white"))
