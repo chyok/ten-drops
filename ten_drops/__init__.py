@@ -76,10 +76,10 @@ def get_drop_images() -> List[Status]:
     ]
 
     max_length = max(max(i.get_size()) for i in drop_images[:130])
-    radio = PLAYGROUND_LENGTH / GRID_SIZE / max_length
+    ratio = PLAYGROUND_LENGTH / GRID_SIZE / max_length
 
     drop_images = [
-        smoothscale(i, (i.get_width() * radio, i.get_height() * radio))
+        smoothscale(i, (i.get_width() * ratio, i.get_height() * ratio))
         for i in drop_images
     ]
 
@@ -119,12 +119,12 @@ def get_droplet_images() -> List[Status]:
 
     max_length = max(max(i.get_size()) for i in droplet_images[:3])
 
-    radio = (
+    ratio = (
         PLAYGROUND_LENGTH / GRID_SIZE / max_length / 3
     )  # droplet is 3 times smaller than a drop
 
     droplet_images = [
-        smoothscale(i, (i.get_width() * radio, i.get_height() * radio))
+        smoothscale(i, (i.get_width() * ratio, i.get_height() * ratio))
         for i in droplet_images
     ]
 
