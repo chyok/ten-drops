@@ -79,19 +79,19 @@ class Drop(Sprite):
 
     def update(self):
         if self.action_type == ActionType.hover:
-            all_count = len(DROP_IMAGES[self.state].action)
+            all_count = len(DROP_IMAGES[self.state].hover)
             if self.action_count < all_count:
-                self._update_image(DROP_IMAGES[self.state].action[self.action_count])
+                self._update_image(DROP_IMAGES[self.state].hover[self.action_count])
                 self.action_count += 1
             else:
                 self.action_count = 0
                 self.action_type = ActionType.static
 
         elif self.action_type == ActionType.change:
-            all_count = len(DROP_IMAGES[self.state - 1].change_action)
+            all_count = len(DROP_IMAGES[self.state - 1].grow)
             if self.action_count < all_count:
                 self._update_image(
-                    DROP_IMAGES[self.state - 1].change_action[self.action_count]
+                    DROP_IMAGES[self.state - 1].grow[self.action_count]
                 )
                 self.action_count += 1
             else:

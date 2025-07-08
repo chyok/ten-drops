@@ -7,6 +7,7 @@ from pygame.sprite import Group, groupcollide, GroupSingle
 from ten_drops import (
     SCREEN,
     PLAYGROUND,
+    PLAYGROUND_RECT,
     BACKGROUND,
     GRID_SIZE,
     PLAYGROUND_OFFSET,
@@ -203,16 +204,7 @@ class Game:
                 pygame.display.update()
                 continue
 
-            SCREEN.blit(
-                PLAYGROUND,
-                (PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
-                pygame.Rect(
-                    PLAYGROUND_OFFSET,
-                    PLAYGROUND_OFFSET,
-                    PLAYGROUND_LENGTH,
-                    PLAYGROUND_LENGTH,
-                ),
-            )
+            SCREEN.blit(PLAYGROUND, PLAYGROUND_RECT)
 
             pygame.draw.lines(
                 SCREEN,
