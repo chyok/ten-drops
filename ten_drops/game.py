@@ -14,10 +14,12 @@ from ten_drops import (
     PLAYGROUND_LENGTH,
     HP_SOUND,
     GROW_SOUND,
+    CELL,
+    cell_center,
 )
 from ten_drops.button import StartButton, AboutButton, ExitButton
 from ten_drops.cover import Cover
-from ten_drops.drop import Drop, DummyDrop
+from ten_drops.drop import Drop
 from ten_drops.droplet import Droplet
 from ten_drops.notification import Notice, NoticeType
 from ten_drops.panel import Level, Score, HP
@@ -47,13 +49,21 @@ class Game:
         self.run = True
 
         self.drops: Group = Group()
-        self.dummy_drops: Group = Group()
         self.droplets: Group = Group()
         self.panel: Group = Group()
         self.buttons: Group = Group()
         self.notifications: GroupSingle = GroupSingle()
 
         self.cover = Cover()
+
+        # clicking near the centre of an empty cell places a new drop
+        self.cells = {
+            (row, col): pygame.Rect(0, 0, CELL // 2, CELL // 2).move_to(
+                center=cell_center(row, col)
+            )
+            for row in range(GRID_SIZE)
+            for col in range(GRID_SIZE)
+        }
 
         self.clock = pygame.time.Clock()
 
@@ -91,11 +101,6 @@ class Game:
         Score(self.score, self.panel)
         HP(self.hp, self.panel)
 
-    def _init_dummy_drops(self):
-        for i in range(GRID_SIZE):
-            for j in range(GRID_SIZE):
-                DummyDrop(i, j, self.dummy_drops)
-
     def notify(self, _type):
         if _type == NoticeType.success:
             text = "     Well Done!\n     + 2 drops\n\n     Next Level"
@@ -116,7 +121,6 @@ class Game:
         self._init_game_data()
         self._init_button()
         self._init_panel()
-        self._init_dummy_drops()
 
         last_hover_rect = pygame.Rect(0, 0, 0, 0)
 
@@ -150,13 +154,11 @@ class Game:
                                 Droplet.diffusion(i.row, i.col, self.droplets)
 
                     if len(self.droplets) == 0 and self.start_game:
-                        for j in self.dummy_drops:
-                            if j.rect.collidepoint(mouse_x, mouse_y):
-                                if (j.row, j.col) not in (
-                                    (i.row, i.col) for i in self.drops
-                                ):
+                        for cell, rect in self.cells.items():
+                            if rect.collidepoint(mouse_x, mouse_y):
+                                if cell not in ((i.row, i.col) for i in self.drops):
                                     GROW_SOUND.play()
-                                    Drop(j.row, j.col, 0, self.drops)
+                                    Drop(*cell, 0, self.drops)
                                     self.hp -= 1
                                 break
 
