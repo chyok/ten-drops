@@ -22,7 +22,7 @@ from ten_drops.cover import Cover
 from ten_drops.drop import Drop
 from ten_drops.droplet import Droplet
 from ten_drops.notification import Notice, NoticeType
-from ten_drops.panel import Level, Score, HP
+from ten_drops.panel import draw_panel
 
 LevelDesign = namedtuple("LevelDesign", "state0, state1, state2, state3")
 Levels = [
@@ -50,7 +50,6 @@ class Game:
 
         self.drops: Group = Group()
         self.droplets: Group = Group()
-        self.panel: Group = Group()
         self.buttons: Group = Group()
         self.notifications: GroupSingle = GroupSingle()
 
@@ -109,11 +108,6 @@ class Game:
     def _exit(self):
         self.run = False
 
-    def _init_panel(self):
-        Level(self.level, self.panel)
-        Score(self.score, self.panel)
-        HP(self.hp, self.panel)
-
     def notify(self, _type):
         if _type == NoticeType.success:
             text = "     Well Done!\n     + 2 drops\n\n     Next Level"
@@ -133,7 +127,6 @@ class Game:
     def start(self):
         self._init_game_data()
         self._init_button()
-        self._init_panel()
 
         last_hover_rect = pygame.Rect(0, 0, 0, 0)
 
@@ -230,12 +223,11 @@ class Game:
             if not paused:
                 self.drops.update()
                 self.droplets.update()
-            self.panel.update(self)
 
             if not paused:
                 self.drops.draw(SCREEN)
                 self.droplets.draw(SCREEN)
-            self.panel.draw(SCREEN)
+            draw_panel(self.level, self.score, self.hp)
             self.notifications.draw(SCREEN)
 
             collisions = (
