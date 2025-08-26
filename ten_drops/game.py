@@ -17,7 +17,7 @@ from ten_drops import (
     CELL,
     cell_center,
 )
-from ten_drops.button import StartButton, AboutButton, ExitButton
+from ten_drops.button import Button
 from ten_drops.cover import Cover
 from ten_drops.drop import Drop
 from ten_drops.droplet import Droplet
@@ -92,9 +92,22 @@ class Game:
                         break
 
     def _init_button(self):
-        StartButton(self.buttons)
-        AboutButton(self.buttons)
-        ExitButton(self.buttons)
+        Button("start", PLAYGROUND_OFFSET * 13.5, self._new_game, self.buttons)
+        Button("about", PLAYGROUND_OFFSET * 15.5, self._about, self.buttons)
+        Button("exit", PLAYGROUND_OFFSET * 17.5, self._exit, self.buttons)
+
+    def _new_game(self):
+        self.drops.empty()
+        self.droplets.empty()
+        self._init_game_data()
+        self._init_grid()
+        self.start_game = True
+
+    def _about(self):
+        self.notify(NoticeType.about)
+
+    def _exit(self):
+        self.run = False
 
     def _init_panel(self):
         Level(self.level, self.panel)
@@ -162,19 +175,9 @@ class Game:
                                     self.hp -= 1
                                 break
 
-                    for i in self.buttons:
-                        if i.rect.collidepoint(mouse_x, mouse_y):
-                            if isinstance(i, StartButton):
-                                self.drops.empty()
-                                self.droplets.empty()
-                                self._init_game_data()
-                                self._init_grid()
-                                self.start_game = True
-                            elif isinstance(i, AboutButton):
-                                self.notify(NoticeType.about)
-                            elif isinstance(i, ExitButton):
-                                self.run = False
-                                break
+                    for button in self.buttons:
+                        if button.rect.collidepoint(mouse_x, mouse_y):
+                            button.action()
 
                 if event.type == pygame.MOUSEMOTION:
                     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -190,11 +193,8 @@ class Game:
                             last_hover_rect = i.rect
                             break
 
-                    for i in self.buttons:
-                        if i.rect.collidepoint(mouse_x, mouse_y):
-                            i.mouse_hover()
-                        else:
-                            i.mouse_leave()
+                    for button in self.buttons:
+                        button.set_hover(button.rect.collidepoint(mouse_x, mouse_y))
 
             SCREEN.blit(BACKGROUND, (0, 0))
             self.buttons.draw(SCREEN)
