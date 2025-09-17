@@ -1,15 +1,7 @@
-import pygame
-
-from typing import Dict
-from collections import namedtuple
-
-from pygame import Surface, Font
-from pygame.color import Color
+from pygame import Font
 from pygame.sprite import Sprite
 
-from ten_drops import NOTIFICATION, FONT_PATH, TEXT_FONT_PATH
-
-_NType = namedtuple("_NType", "name font color")
+from ten_drops import FONT_PATH, NOTIFICATION, TEXT_FONT_PATH
 
 
 class NoticeType:
@@ -18,42 +10,27 @@ class NoticeType:
     success = "success"
 
 
-text_font = Font(TEXT_FONT_PATH, size=16)
-text_font.set_bold(True)
+_text_font = Font(TEXT_FONT_PATH, size=16)
+_text_font.set_bold(True)
+_title_font = Font(FONT_PATH, size=45)
 
-TextDict: Dict[str, _NType] = {
-    NoticeType.about: _NType("about", text_font, Color("white")),
-    NoticeType.failed: _NType("failed", Font(FONT_PATH, size=45), Color("white")),
-    NoticeType.success: _NType("success", Font(FONT_PATH, size=45), Color("white")),
+FONTS = {
+    NoticeType.about: _text_font,
+    NoticeType.failed: _title_font,
+    NoticeType.success: _title_font,
 }
 
 
 class Notice(Sprite):
-    def __init__(self, _type, text, *groups):
+    """A notice that slides down from the top of the screen."""
+
+    def __init__(self, kind, text, *groups):
         super().__init__(*groups)
-        self._notification = TextDict[_type]
-
-        self.text_area = Surface(
-            (NOTIFICATION.get_width() * 0.8, NOTIFICATION.get_height() * 0.5),
-            pygame.SRCALPHA,
-        )
         self.image = NOTIFICATION.copy()
-        self.rect = self.image.get_rect()
-        self.rect.y = -self.rect.height
-
-        text_surface = self._notification.font.render(
-            text, True, self._notification.color
-        )
-
-        self.text_area.blit(text_surface, (0, 0))
-        self.image.blit(
-            self.text_area,
-            (
-                (self.image.get_width() - self.text_area.get_width()) / 1.8,
-                NOTIFICATION.get_height() * 0.4,
-            ),
-        )
+        self.rect = self.image.get_rect(bottom=0)
+        width, height = self.image.get_size()
+        text_image = FONTS[kind].render(text, True, "white")
+        self.image.blit(text_image, (width // 9, height * 0.4))
 
     def update(self):
-        if self.rect.y < 0:
-            self.rect.y += 25
+        self.rect.y = min(self.rect.y + 25, 0)

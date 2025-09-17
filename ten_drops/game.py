@@ -18,7 +18,7 @@ from ten_drops import (
     cell_center,
 )
 from ten_drops.button import Button
-from ten_drops.cover import Cover
+from ten_drops.cover import make_cover
 from ten_drops.drop import Drop
 from ten_drops.droplet import Droplet
 from ten_drops.notification import Notice, NoticeType
@@ -53,7 +53,7 @@ class Game:
         self.buttons: Group = Group()
         self.notifications: GroupSingle = GroupSingle()
 
-        self.cover = Cover()
+        self.cover = make_cover()
 
         # clicking near the centre of an empty cell places a new drop
         self.cells = {
@@ -194,7 +194,7 @@ class Game:
             self.notifications.update()
 
             if not self.start_game:
-                self.cover.draw()
+                SCREEN.blit(self.cover, (0, 0))
                 self.notifications.draw(SCREEN)
                 pygame.display.update()
                 continue
