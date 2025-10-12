@@ -1,20 +1,18 @@
 import random
-import pygame
 
-from collections import namedtuple
-from pygame.sprite import Group, groupcollide, GroupSingle
+import pygame
+from pygame.sprite import Group, GroupSingle, groupcollide
 
 from ten_drops import (
-    SCREEN,
-    PLAYGROUND,
-    PLAYGROUND_RECT,
     BACKGROUND,
-    GRID_SIZE,
-    PLAYGROUND_OFFSET,
-    PLAYGROUND_LENGTH,
-    HP_SOUND,
-    GROW_SOUND,
     CELL,
+    GRID_SIZE,
+    GROW_SOUND,
+    HP_SOUND,
+    PLAYGROUND,
+    PLAYGROUND_OFFSET,
+    PLAYGROUND_RECT,
+    SCREEN,
     cell_center,
 )
 from ten_drops.button import Button
@@ -24,36 +22,41 @@ from ten_drops.droplet import Droplet
 from ten_drops.notification import Notice, NoticeType
 from ten_drops.panel import draw_panel
 
-LevelDesign = namedtuple("LevelDesign", "state0, state1, state2, state3")
-Levels = [
-    LevelDesign(2, 5, 8, 9),
-    LevelDesign(2, 6, 7, 8),
-    LevelDesign(3, 7, 7, 7),
-    LevelDesign(3, 7, 6, 6),
-    LevelDesign(4, 7, 6, 5),
-    LevelDesign(4, 8, 6, 5),
-    LevelDesign(4, 8, 5, 5),
-    LevelDesign(5, 9, 3, 5),
-    LevelDesign(6, 9, 4, 5),
+# number of drops in each state (smallest to largest) per level
+LEVELS = [
+    (2, 5, 8, 9),
+    (2, 6, 7, 8),
+    (3, 7, 7, 7),
+    (3, 7, 6, 6),
+    (4, 7, 6, 5),
+    (4, 8, 6, 5),
+    (4, 8, 5, 5),
+    (5, 9, 3, 5),
+    (6, 9, 4, 5),
 ]
+
+ABOUT_TEXT = (
+    "The game and water drop assets are \n"
+    'from the Flash game "Splash Back".\n'
+    "\n\n\nAuthor: chyok\n"
+    "Email : chyok@hotmail.com\nGithub: https://github.com/chyok\n"
+    "\nImplemented using pygame-ce."
+)
 
 
 class Game:
-    level: int
-    score: int
-    hp: int
-    combo: int
-
     def __init__(self):
         self.start_game = False
         self.run = True
 
-        self.drops: Group = Group()
-        self.droplets: Group = Group()
-        self.buttons: Group = Group()
-        self.notifications: GroupSingle = GroupSingle()
+        self.drops = Group()
+        self.droplets = Group()
+        self.buttons = Group()
+        self.notifications = GroupSingle()
 
-        self.cover = make_cover()
+        Button("start", PLAYGROUND_OFFSET * 13.5, self._new_game, self.buttons)
+        Button("about", PLAYGROUND_OFFSET * 15.5, self._about, self.buttons)
+        Button("exit", PLAYGROUND_OFFSET * 17.5, self._exit, self.buttons)
 
         # clicking near the centre of an empty cell places a new drop
         self.cells = {
@@ -63,8 +66,10 @@ class Game:
             for row in range(GRID_SIZE)
             for col in range(GRID_SIZE)
         }
-
+        self.hovered = pygame.Rect(0, 0, 0, 0)
+        self.cover = make_cover()
         self.clock = pygame.time.Clock()
+        self._init_game_data()
 
     def _init_game_data(self):
         self.level = 1
@@ -73,27 +78,14 @@ class Game:
         self.combo = 1
 
     def _init_grid(self):
-        used_positions = set()
-
-        if self.level - 1 >= len(Levels):
-            level = Levels[random.randint(-5, -1)]
+        if self.level <= len(LEVELS):
+            counts = LEVELS[self.level - 1]
         else:
-            level = Levels[self.level - 1]
-
-        for state, count in enumerate(level):
-            for _ in range(count):
-                while True:
-                    row = random.randint(0, GRID_SIZE - 1)
-                    col = random.randint(0, GRID_SIZE - 1)
-                    if (row, col) not in used_positions:
-                        used_positions.add((row, col))
-                        Drop(row, col, state, self.drops)
-                        break
-
-    def _init_button(self):
-        Button("start", PLAYGROUND_OFFSET * 13.5, self._new_game, self.buttons)
-        Button("about", PLAYGROUND_OFFSET * 15.5, self._about, self.buttons)
-        Button("exit", PLAYGROUND_OFFSET * 17.5, self._exit, self.buttons)
+            counts = random.choice(LEVELS[-5:])
+        states = [state for state, count in enumerate(counts) for _ in range(count)]
+        cells = random.sample(list(self.cells), len(states))
+        for (row, col), state in zip(cells, states):
+            Drop(row, col, state, self.drops)
 
     def _new_game(self):
         self.drops.empty()
@@ -108,86 +100,109 @@ class Game:
     def _exit(self):
         self.run = False
 
-    def notify(self, _type):
-        if _type == NoticeType.success:
+    def notify(self, kind):
+        if kind == NoticeType.success:
             text = "     Well Done!\n     + 2 drops\n\n     Next Level"
-        elif _type == NoticeType.failed:
+        elif kind == NoticeType.failed:
             text = f"You Lost\nYour Score: {self.score}"
         else:
-            text = (
-                "The game and water drop assets are \n"
-                'from the Flash game "Splash Back".\n'
-                "\n\n\nAuthor: chyok\n"
-                "Email : chyok@hotmail.com\nGithub: https://github.com/chyok\n"
-                "\nImplemented using pygame-ce."
-            )
+            text = ABOUT_TEXT
+        Notice(kind, text, self.notifications)
 
-        Notice(_type, text, self.notifications)
+    def _on_click(self, pos):
+        if self.notifications:
+            self.notifications.empty()
+            return
+
+        if self.start_game and not self.droplets:
+            self._click_board(pos)
+
+        for button in self.buttons:
+            if button.rect.collidepoint(pos):
+                button.action()
+
+    def _click_board(self, pos):
+        drop = next((d for d in self.drops if d.rect.collidepoint(pos)), None)
+        if drop:
+            if drop.click():
+                self.combo = 1
+                self.hp -= 1
+                if drop.need_diffuse:
+                    self.score += 10
+                    Droplet.diffusion(drop.row, drop.col, self.droplets)
+            return
+
+        occupied = {(d.row, d.col) for d in self.drops}
+        for cell, rect in self.cells.items():
+            if rect.collidepoint(pos) and cell not in occupied:
+                GROW_SOUND.play()
+                Drop(*cell, 0, self.drops)
+                self.hp -= 1
+
+    def _on_motion(self, pos):
+        # start the hover animation once when the mouse enters a drop
+        if not self.hovered.collidepoint(pos):
+            self.hovered = pygame.Rect(0, 0, 0, 0)
+            for drop in self.drops:
+                if drop.rect.collidepoint(pos):
+                    drop.mouse_hover()
+                    self.hovered = drop.rect
+                    break
+
+        for button in self.buttons:
+            button.set_hover(button.rect.collidepoint(pos))
+
+    def _resolve_collisions(self):
+        hits = groupcollide(self.drops, self.droplets, False, False)
+        for drop, droplets in hits.items():
+            drop.hit()
+            droplets[0].kill()  # many droplets hit same drop, only delete one
+
+            if drop.need_diffuse:
+                self.score += 10
+                self.combo += 1
+                if self.combo % 3 == 0 or self.combo > 21:
+                    HP_SOUND.play()
+                    self.hp += 1
+                Droplet.diffusion(drop.row, drop.col, self.droplets)
+
+    def _check_progress(self):
+        if not self.drops and not self.droplets:
+            self.level += 1
+            self.hp += 2
+            self.notify(NoticeType.success)
+            self._init_grid()
+
+        if not self.droplets and self.hp <= 0:
+            self.notify(NoticeType.failed)
+            self.start_game = False
+
+    def _draw_board(self, paused):
+        SCREEN.blit(PLAYGROUND, PLAYGROUND_RECT)
+        rect = PLAYGROUND_RECT
+        pygame.draw.lines(
+            SCREEN,
+            "white",
+            True,
+            [rect.topleft, rect.bottomleft, rect.bottomright, rect.topright],
+        )
+        if not paused:
+            self.drops.draw(SCREEN)
+            self.droplets.draw(SCREEN)
+        draw_panel(self.level, self.score, self.hp)
 
     def start(self):
-        self._init_game_data()
-        self._init_button()
-
-        last_hover_rect = pygame.Rect(0, 0, 0, 0)
-
         while self.run:
             self.clock.tick(30)
 
             for event in pygame.event.get():
-
                 if event.type == pygame.QUIT:
                     self.run = False
                     break
-
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_x, mouse_y = pygame.mouse.get_pos()
-                    if len(self.notifications) > 0:
-                        self.notifications.empty()
-                        continue
-
-                    for i in self.drops:
-                        if (
-                            self.start_game
-                            and i.rect.collidepoint(mouse_x, mouse_y)
-                            and len(self.droplets) == 0
-                        ):
-                            if not i.click():
-                                continue
-                            self.combo = 1
-                            self.hp = self.hp - 1
-                            if i.need_diffuse:
-                                self.score += 10
-                                Droplet.diffusion(i.row, i.col, self.droplets)
-
-                    if len(self.droplets) == 0 and self.start_game:
-                        for cell, rect in self.cells.items():
-                            if rect.collidepoint(mouse_x, mouse_y):
-                                if cell not in ((i.row, i.col) for i in self.drops):
-                                    GROW_SOUND.play()
-                                    Drop(*cell, 0, self.drops)
-                                    self.hp -= 1
-                                break
-
-                    for button in self.buttons:
-                        if button.rect.collidepoint(mouse_x, mouse_y):
-                            button.action()
-
-                if event.type == pygame.MOUSEMOTION:
-                    mouse_x, mouse_y = pygame.mouse.get_pos()
-
-                    if not last_hover_rect.collidepoint(mouse_x, mouse_y):
-                        last_hover_rect = pygame.Rect(0, 0, 0, 0)
-
-                    for i in self.drops:
-                        if i.rect.collidepoint(
-                            mouse_x, mouse_y
-                        ) and not last_hover_rect.collidepoint(mouse_x, mouse_y):
-                            i.mouse_hover()
-                            last_hover_rect = i.rect
-                            break
-
-                    for button in self.buttons:
-                        button.set_hover(button.rect.collidepoint(mouse_x, mouse_y))
+                    self._on_click(event.pos)
+                elif event.type == pygame.MOUSEMOTION:
+                    self._on_motion(event.pos)
 
             SCREEN.blit(BACKGROUND, (0, 0))
             self.buttons.draw(SCREEN)
@@ -199,70 +214,17 @@ class Game:
                 pygame.display.update()
                 continue
 
-            SCREEN.blit(PLAYGROUND, PLAYGROUND_RECT)
-
-            pygame.draw.lines(
-                SCREEN,
-                (255, 255, 255),
-                True,
-                [
-                    (PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
-                    (PLAYGROUND_OFFSET, PLAYGROUND_LENGTH + PLAYGROUND_OFFSET),
-                    (
-                        PLAYGROUND_LENGTH + PLAYGROUND_OFFSET,
-                        PLAYGROUND_LENGTH + PLAYGROUND_OFFSET,
-                    ),
-                    (PLAYGROUND_LENGTH + PLAYGROUND_OFFSET, PLAYGROUND_OFFSET),
-                ],
-                1,
-            )
-
             # freeze the board while a notification is shown
-            paused = len(self.notifications) > 0
-
+            paused = bool(self.notifications)
             if not paused:
                 self.drops.update()
                 self.droplets.update()
-
-            if not paused:
-                self.drops.draw(SCREEN)
-                self.droplets.draw(SCREEN)
-            draw_panel(self.level, self.score, self.hp)
+            self._draw_board(paused)
             self.notifications.draw(SCREEN)
-
-            collisions = (
-                {}
-                if paused
-                else groupcollide(
-                    self.drops, self.droplets, dokilla=False, dokillb=False
-                )
-            )
-            for drop, droplets in collisions.items():
-                drop.hit()
-
-                droplets[0].kill()  # many droplets hit same drop, only delete one
-
-                if drop.need_diffuse:
-                    self.score += 10
-                    self.combo += 1
-                    if self.combo in (3, 6, 9, 12, 15, 18, 21):
-                        HP_SOUND.play()
-                        self.hp += 1
-                    elif self.combo > 21:
-                        HP_SOUND.play()
-                        self.hp += 1
-                    Droplet.diffusion(drop.row, drop.col, self.droplets)
-
+            if not paused:
+                self._resolve_collisions()
             pygame.display.update()
 
-            if len(self.drops) <= 0 and len(self.droplets) == 0:
-                self.level += 1
-                self.hp += 2
-                self.notify(NoticeType.success)
-                self._init_grid()
-
-            if len(self.droplets) == 0 and self.hp <= 0:
-                self.notify(NoticeType.failed)
-                self.start_game = False
+            self._check_progress()
 
         pygame.quit()
