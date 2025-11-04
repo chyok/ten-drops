@@ -9,7 +9,6 @@ readme = "README.md"
 homepage = "https://github.com/chyok/ten-drops"
 repository = "https://github.com/chyok/ten-drops"
 packages = [{include = "ten_drops"}]
-include = ["ten_drops/asset"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
