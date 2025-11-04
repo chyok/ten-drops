@@ -1,5 +1,4 @@
-from ten_drops.game import Game
+from ten_drops.cli import run
 
-if __name__ == '__main__':
-    game = Game()
-    game.start()
+if __name__ == "__main__":
+    run()
