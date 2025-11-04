@@ -12,4 +12,6 @@ def draw_panel(level, score, hp):
         (f"score \n{score}", SMALL_FONT, 4),
         (f"drop \n{hp}", SMALL_FONT, 7),
     ):
-        SCREEN.blit(font.render(text, True, "white"), (PANEL_X, PLAYGROUND_OFFSET * row))
+        SCREEN.blit(
+            font.render(text, True, "white"), (PANEL_X, PLAYGROUND_OFFSET * row)
+        )
