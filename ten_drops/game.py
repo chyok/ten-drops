@@ -199,7 +199,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.run = False
                     break
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     self._on_click(event.pos)
                 elif event.type == pygame.MOUSEMOTION:
                     self._on_motion(event.pos)
