@@ -37,6 +37,7 @@ class Drop(Sprite):
         else:
             self.state += 1
             self.action = GROW
+            self.frame = 0
 
     def update(self):
         if self.action == GROW:
