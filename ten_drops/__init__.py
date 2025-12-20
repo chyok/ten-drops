@@ -52,8 +52,8 @@ class Sound:
             self.sound.play()
 
 
-def _load(folder: str, index: int) -> Surface:
-    image = pygame.image.load(join(IMG_PATH, folder, f"{index}.png")).convert_alpha()
+def _load(*path: str) -> Surface:
+    image = pygame.image.load(join(IMG_PATH, *path)).convert_alpha()
     image.fill("blue", special_flags=pygame.BLEND_ADD)
     return image
 
@@ -73,7 +73,7 @@ _DROP_FRAMES = [
 
 def _drop_images() -> List[Frames]:
     used = {i for hover, grow, _ in _DROP_FRAMES for i in (*hover, *grow)}
-    images = {i: _load("drop", i) for i in used}
+    images = {i: _load("drop", f"{i}.png") for i in used}
     # the largest frame fills a whole cell
     ratio = CELL / max(max(image.get_size()) for image in images.values())
     images = {i: _scale(image, ratio) for i, image in images.items()}
@@ -84,10 +84,9 @@ def _drop_images() -> List[Frames]:
 
 
 def _droplet_image() -> Surface:
-    images = [_load("droplet", i) for i in range(3)]
+    image = _load("droplet.png")
     # a droplet is a third of a drop
-    ratio = CELL / max(max(image.get_size()) for image in images) / 3
-    return _scale(images[1], ratio)
+    return _scale(image, CELL / 3 / max(image.get_size()))
 
 
 BACKGROUND = smoothscale(
