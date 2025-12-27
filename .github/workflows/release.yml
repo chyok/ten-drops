@@ -1,0 +1,97 @@
+# Push a tag like v1.0.4 (matching the version in pyproject.toml) to
+# build the Windows binary, publish to PyPI and create the GitHub release.
+
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+env:
+  TAG: ${{ github.ref_name }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check tag matches pyproject version
+        run: |
+          version=$(grep -m1 '^version = ' pyproject.toml | cut -d '"' -f 2)
+          if [ "$TAG" != "v$version" ]; then
+            echo "::error::Tag $TAG does not match pyproject version $version"
+            exit 1
+          fi
+
+  windows:
+    needs: check
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install . pyinstaller==6.11.1
+      - name: Build exe
+        run: >-
+          pyinstaller main.py --onefile --windowed
+          --name "ten-drops-$env:TAG"
+          --icon ten_drops/asset/img/game.ico
+          --add-data "ten_drops/asset:ten_drops/asset"
+      - name: Zip exe
+        run: >-
+          Compress-Archive
+          -Path "dist/ten-drops-$env:TAG.exe"
+          -DestinationPath "ten-drops-$env:TAG-windows.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: ten-drops-${{ env.TAG }}-windows.zip
+
+  dist:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Build package
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  release:
+    needs: [windows, dist]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$TAG" "ten-drops-$TAG-windows.zip"
+          --repo "$GITHUB_REPOSITORY" --title "$TAG" --generate-notes
