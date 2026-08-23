@@ -11,8 +11,8 @@ repository = "https://github.com/chyok/ten-drops"
 packages = [{include = "ten_drops"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-pygame-ce = "^2.5.0"
+python = "^3.10"
+pygame-ce = "^2.5.8"
 
 
 [build-system]
