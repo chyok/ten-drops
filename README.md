@@ -48,11 +48,12 @@ Binary files for Windows that can be directly executed to play the game.
 
 ### from source
 
+The project is managed with [uv](https://docs.astral.sh/uv/).
+
 ```bash
 git clone https://github.com/chyok/ten-drops.git
 cd ten-drops
-pip install .
-python main.py
+uv run ten-drops
 ```
 
 ## Release
